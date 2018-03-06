@@ -15,8 +15,7 @@ addons:
       - shared-mime-info 
       - libudev-dev 
       - libmad0-dev 
-      - libsndfile1-dev 
-      - liblo-dev
+      - libsndfile1-dev
       - libfftw3-dev
     packages: &qt5_pkg
       - *base_pkg
@@ -74,7 +73,7 @@ matrix:
     - os: linux
       dist: trusty
       compiler: gcc
-      env: TASK='appimage' QT='qt5'
+      env: TASK='appimage' QT='qt5qml'
       addons:
         apt:
           sources:
@@ -88,12 +87,13 @@ cache:
 before_install:
  - if [ "$QT" = "qt4" ]; then export QMAKE=qmake; fi
  - if [ "$TASK" = "compile" ] && [ "$QT" = "qt5" ]; then export QMAKE=/opt/qt56/bin/qmake; fi
- - if [ "$TASK" = "appimage" ] && [ "$QT" = "qt5" ]; then export QMAKE=/opt/qt59/bin/qmake; fi
+ - if [ "$TASK" = "appimage" ]; then export QMAKE=/opt/qt59/bin/qmake; fi
  - if [ "$TASK" = "coverage" ]; then gem install coveralls-lcov; fi
 #Report the qmake version
  - $QMAKE -v
 #Remove the old g++/gcc to ensure we're using the latest ones
-# - if [ "$QT" = "qt5" ] && [ "$CXX" = "g++" ]; then sudo rm /usr/bin/g++; sudo rm /usr/bin/gcc; export CXX="g++-5" CC="gcc-5"; fi
+ - if [ "$QT" = "qt5" ] && [ "$CXX" = "g++" ]; then sudo rm /usr/bin/g++; sudo rm /usr/bin/gcc; export CXX="g++-5" CC="gcc-5"; fi
+ - if [ "$QT" = "qt5qml" ] && [ "$CXX" = "g++" ]; then sudo rm /usr/bin/g++; sudo rm /usr/bin/gcc; export CXX="g++-7" CC="gcc-7"; fi
 #Report the compiler version
  - $CXX --version
  # Start xvfb so UI tests don't fail
