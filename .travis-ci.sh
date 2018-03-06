@@ -12,3 +12,7 @@ if [ "$TASK" = "coverage" ]; then
 $QMAKE CONFIG+=coverage QMAKE_CXX=$CXX QMAKE_CC=$CC QMAKE_LINK=$CXX QMAKE_LINK_SHLIB=$CXX && make && ./coverage.sh
 exit $?
 fi
+if [ "$TASK" = "appimage" ]; then
+$QMAKE QMAKE_CXX=$CXX QMAKE_CC=$CC QMAKE_LINK=$CXX QMAKE_LINK_SHLIB=$CXX CONFIG+=qmlui CONFIG+=appimage && make
+exit $?
+fi
