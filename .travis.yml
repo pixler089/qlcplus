@@ -92,8 +92,8 @@ before_install:
 #Report the qmake version
  - $QMAKE -v
 #Remove the old g++/gcc to ensure we're using the latest ones
- - if [ "$QT" = "qt5" ] && [ "$CXX" = "g++" ]; then sudo rm /usr/bin/g++; sudo rm /usr/bin/gcc; export CXX="g++-5" CC="gcc-5"; fi
- - if [ "$QT" = "qt5qml" ] && [ "$CXX" = "g++" ]; then sudo rm /usr/bin/g++; sudo rm /usr/bin/gcc; export CXX="g++-7" CC="gcc-7"; fi
+ - if [ "$QT" = "qt5" ]; then sudo ln -sf /usr/bin/g++-5 /usr/bin/g++; sudo ln -sf /usr/bin/gcc-5 /usr/bin/gcc; fi
+ - if [ "$QT" = "qt5qml" ]; then sudo ln -sf /usr/bin/g++-7 /usr/bin/g++; sudo ln -sf /usr/bin/gcc-7 /usr/bin/gcc; fi
 #Report the compiler version
  - $CXX --version
  # Start xvfb so UI tests don't fail
