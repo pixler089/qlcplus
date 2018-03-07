@@ -33,6 +33,7 @@ addons:
       - qt59gamepad
       - qt59svg
       - qt59multimedia
+      - libpulse-dev
       - g++-7
 
 matrix:
