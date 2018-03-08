@@ -15,6 +15,7 @@ fi
 if [ "$TASK" = "appimage" ]; then
 $QMAKE CONFIG+=appimage CONFIG+=qmlui && make
 make INSTALL_ROOT=appdir install; find appdir/
+sed -i -e 's/Exec=qlcplus --open %f/Exec=qlcplus-qml/g' appdir/usr/share/applications/qlcplus.desktop
 wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
 chmod a+x linuxdeployqt-continuous-x86_64.AppImage
 unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
