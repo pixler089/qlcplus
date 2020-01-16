@@ -553,6 +553,12 @@ void VCButton::slotInputValueChanged(quint32 universe, quint32 channel, uchar va
             // Releasing the button does nothing.
             pressFunction();
         }
+        else if (value == 0)
+        {
+            //With Behringer Touch Mini we need tu update the feedback after the KEY_OFF MIDI-Signal, otherwise the
+            //Behringer will switch the lamp off by its own
+            updateFeedback();
+        }
     }
 }
 
