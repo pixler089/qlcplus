@@ -37,6 +37,7 @@
 #include <QMenu>
 #include <QSize>
 #include <QPen>
+#include <iostream>
 
 #include "vcsliderproperties.h"
 #include "vcpropertieseditor.h"
@@ -201,6 +202,8 @@ VCSlider::VCSlider(QWidget *parent, Doc *doc)
     setInvertedAppearance(false);
     m_sliderMode = SliderMode(-1); // avoid use of uninitialized value
     setSliderMode(Playback);
+	m_valueMode = ValueMode(-1);
+	setValueMode(HTP);
 
     /* Update the slider according to current mode */
     slotModeChanged(m_doc->mode());
@@ -281,6 +284,8 @@ bool VCSlider::copyFrom(const VCWidget* widget)
     /* Copy mode & current value */
     setSliderMode(slider->sliderMode());
     setSliderValue(slider->sliderValue());
+
+	setValueMode(slider->valueMode());
 
     /* Copy monitor mode */
     setChannelsMonitorEnabled(slider->channelsMonitorEnabled());
@@ -741,6 +746,48 @@ void VCSlider::slotUniverseWritten(quint32 idx, const QByteArray &universeData)
     }
 }
 
+/*****************************************************************************
+ * Value Mode
+ *****************************************************************************/
+
+QString VCSlider::valueModeToString(ValueMode mode)
+{
+    switch (mode)
+    {
+        case HTP: return QString("HTP"); break;
+        case SubmasterFixture: return QString("SubmasterFixture"); break;
+        case Add: return QString("Add"); break;
+        case Substract: return QString("Substract"); break;
+        default: return QString("Unknown"); break;
+    }
+}
+
+VCSlider::ValueMode VCSlider::stringToValueMode(const QString& mode)
+{
+    if (mode == QString("HTP"))
+        return HTP;
+    else  if (mode == QString("SubmasterFixture"))
+       return SubmasterFixture;
+    else  if (mode == QString("Add"))
+       return Add;
+    else  if (mode == QString("Substract"))
+       return Substract;
+    else //if (mode == QString("Submaster"))
+        return HTP;
+}
+
+VCSlider::ValueMode VCSlider::valueMode() const
+{
+    return m_valueMode;
+}
+
+void VCSlider::setValueMode(ValueMode mode)
+{
+    Q_ASSERT(mode >= HTP && mode <= Substract);
+
+    m_valueMode = mode;
+}
+
 /*********************************************************************
  * Click & Go
  *********************************************************************/
@@ -1108,9 +1155,15 @@ void VCSlider::writeDMXLevel(MasterTimer *timer, QList<Universe *> universes)
             quint32 universe = fxi->universe();
 
             QSharedPointer<GenericFader> fader = m_fadersMap.value(universe, QSharedPointer<GenericFader>());
+
+			Universe::FaderPriority faderPriority=m_monitorEnabled ? Universe::Override : Universe::Auto;
+			//For submaster functionality we need to multiply after all other operations
+			if (m_valueMode==SubmasterFixture)
+				faderPriority=Universe::SubmasterFixture;
+
             if (fader.isNull())
             {
-                fader = universes[universe]->requestFader(m_monitorEnabled ? Universe::Override : Universe::Auto);
+                fader = universes[universe]->requestFader(faderPriority);
                 fader->adjustIntensity(intensity());
                 m_fadersMap[universe] = fader;
                 if (m_monitorEnabled)
@@ -1121,6 +1174,31 @@ void VCSlider::writeDMXLevel(MasterTimer *timer, QList<Universe *> universes)
                             this, SLOT(slotUniverseWritten(quint32,QByteArray)));
                 }
             }
+			
+			//If we change the value Mode we also have to change priority
+			if (fader->priority()!=faderPriority)
+			{
+				universes[universe]->requestFaderPriority(fader, faderPriority);
+			}
+
+			switch(m_valueMode)
+			{
+				default:
+				case HTP:
+					fader->setBlendMode(Universe::NormalBlend);
+				break;
+				case SubmasterFixture:
+					fader->setBlendMode(Universe::MaskBlend);
+				break;
+				case Add:
+					fader->setBlendMode(Universe::AdditiveBlend);
+				break;
+				case Substract:
+					fader->setBlendMode(Universe::SubtractiveBlend);
+				break;
+
+			}
+
 
             FadeChannel *fc = fader->getChannelFader(m_doc, universes[universe], lch.fixture, lch.channel);
             if (fc->universe() == Universe::invalid())
@@ -1650,6 +1728,10 @@ bool VCSlider::loadXMLLevel(QXmlStreamReader &level_root)
     str = attrs.value(KXMLQLCVCSliderLevelHighLimit).toString();
     setLevelHighLimit(str.toInt());
 
+	/* Level Mode */
+	str = attrs.value("ValueMode").toString();
+	setValueMode(stringToValueMode(str));
+
     /* Level value */
     str = attrs.value(KXMLQLCVCSliderLevelValue).toString();
     setLevelValue(str.toInt());
@@ -1789,6 +1871,9 @@ bool VCSlider::saveXML(QXmlStreamWriter *doc)
     doc->writeAttribute(KXMLQLCVCSliderLevelLowLimit, QString::number(levelLowLimit()));
     /* Level high limit */
     doc->writeAttribute(KXMLQLCVCSliderLevelHighLimit, QString::number(levelHighLimit()));
+	/* Level mode */
+	std::cout<<"ValueMode"<<valueModeToString(m_valueMode).toStdString()<<std::endl;
+	doc->writeAttribute("ValueMode", valueModeToString(m_valueMode));
     /* Level value */
     doc->writeAttribute(KXMLQLCVCSliderLevelValue, QString::number(levelValue()));
 

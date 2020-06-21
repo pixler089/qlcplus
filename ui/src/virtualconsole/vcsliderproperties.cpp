@@ -122,6 +122,23 @@ VCSliderProperties::VCSliderProperties(VCSlider* slider, Doc* doc)
         break;
     }
 
+	switch (m_slider->valueMode())
+	{
+		default:
+		case VCSlider::HTP:
+			m_levelModeCombobox->setCurrentIndex(0);
+		break;
+		case VCSlider::SubmasterFixture:
+			m_levelModeCombobox->setCurrentIndex(1);
+		break;
+		case VCSlider::Add:
+			m_levelModeCombobox->setCurrentIndex(2);
+		break;
+		case VCSlider::Substract:
+			m_levelModeCombobox->setCurrentIndex(3);
+		break;
+	}
+
     /* Slider movement (Qt understands inverted appearance vice versa) */
     if (m_slider->invertedAppearance() == true)
         m_sliderMovementInvertedRadio->setChecked(true);
@@ -848,6 +865,22 @@ void VCSliderProperties::accept()
         m_slider->setClickAndGoType(ClickAndGoWidget::CMY);
     else if (m_cngPresetCheck->isChecked())
         m_slider->setClickAndGoType(ClickAndGoWidget::Preset);
+
+    switch (m_levelModeCombobox->currentIndex())
+    {
+        case 1:
+            m_slider->setValueMode(VCSlider::SubmasterFixture);
+            break;
+        case 2:
+            m_slider->setValueMode(VCSlider::Add);
+            break;
+        case 3:
+            m_slider->setValueMode(VCSlider::Substract);
+            break;
+        default:
+            m_slider->setValueMode(VCSlider::HTP);
+            break;
+    }
 
     /* Playback page */
     m_slider->setPlaybackFunction(m_playbackFunctionId);

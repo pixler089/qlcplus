@@ -340,6 +340,7 @@ public:
     {
         Auto = 0,
         Override,
+		SubmasterFixture,
         SimpleDesk
     };
 
