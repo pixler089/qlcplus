@@ -220,6 +220,44 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
+        <layout class="QHBoxLayout" name="m_levelModeLayout">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="m_levelModeLabel">
+           <property name="text">
+            <string>Slider mode:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="m_levelModeCombobox">
+           <item>
+            <property name="text">
+             <string>HTP</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>SubmasterFixture</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Add</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Substract</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QGroupBox" name="m_levelValueRangeGroup">
          <property name="title">
           <string>Value range</string>
@@ -328,22 +366,22 @@
        <item>
         <layout class="QHBoxLayout">
          <item>
-          <widget class="QPushButton" name="m_levelAllButton">
-           <property name="toolTip">
-            <string>Select all channels</string>
-           </property>
-           <property name="text">
-            <string>All</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="m_levelNoneButton">
            <property name="toolTip">
             <string>Unselect everything</string>
            </property>
            <property name="text">
             <string>None</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_levelAllButton">
+           <property name="toolTip">
+            <string>Select all channels</string>
+           </property>
+           <property name="text">
+            <string>Alle</string>
            </property>
           </widget>
          </item>

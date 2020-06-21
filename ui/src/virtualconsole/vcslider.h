@@ -200,6 +200,52 @@ protected:
     ValueDisplayStyle m_valueDisplayStyle;
 
     /*********************************************************************
+     * Value Mode
+     *********************************************************************/
+public:
+    enum ValueMode
+    {
+		HTP,
+		SubmasterFixture,
+		Add,
+		Substract
+    };
+
+public:
+    /**
+     * Convert a SliderMode enum to a string that can be saved into
+     * an XML file.
+     *
+     * @param mode The mode to convert
+     * @return A string
+     */
+    static QString valueModeToString(ValueMode mode);
+
+    /**
+     * Convert a string into a SliderMode enum.
+     *
+     * @param mode The string to convert
+     * @return SliderMode
+     */
+    static ValueMode stringToValueMode(const QString& mode);
+
+    /**
+     * Get the slider's current SliderMode
+     */
+    ValueMode valueMode() const;
+
+    /**
+     * Change the slider's current SliderMode
+     */
+    void setValueMode(ValueMode mode);
+
+protected:
+    ValueMode m_valueMode;
+
+    /*********************************************************************
+     * Value display style
+     *********************************************************************/
+    /*********************************************************************
      * Inverted appearance
      *********************************************************************/
 public:
