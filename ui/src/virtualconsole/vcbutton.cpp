@@ -74,7 +74,9 @@ const QSize VCButton::defaultSize(QSize(50, 50));
 
 VCButton::VCButton(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     , m_iconPath()
+    , m_activeWithSnapModifier(false)
     , m_blackoutFadeOutTime(0)
+    , m_modifierSnapFlash(false)
     , m_startupIntensityEnabled(false)
     , m_startupIntensity(1.0)
 {
@@ -540,7 +542,7 @@ void VCButton::slotInputValueChanged(quint32 universe, quint32 channel, uchar va
 
     if (checkInputSource(universe, (page() << 16) | channel, value, sender()))
     {
-        if (m_action == Flash)
+        if ((m_action == Flash && !m_activeWithSnapModifier) || m_action == Modifier)
         {
             // Keep the button depressed only while the external button is kept down.
             // Raise the button when the external button is raised.
@@ -610,6 +612,8 @@ QString VCButton::actionToString(VCButton::Action action)
         return QString(KXMLQLCVCButtonActionBlackout);
     else if (action == StopAll)
         return QString(KXMLQLCVCButtonActionStopAll);
+	else if (action == Modifier)
+		return QString(KXMLQLCVCButtonActionModifier);
     else
         return QString(KXMLQLCVCButtonActionToggle);
 }
@@ -622,6 +626,8 @@ VCButton::Action VCButton::stringToAction(const QString& str)
         return Blackout;
     else if (str == KXMLQLCVCButtonActionStopAll)
         return StopAll;
+	else if (str == KXMLQLCVCButtonActionModifier)
+		return Modifier;
     else
         return Toggle;
 }
@@ -634,6 +640,16 @@ void VCButton::setStopAllFadeOutTime(int ms)
 int VCButton::stopAllFadeTime()
 {
     return m_blackoutFadeOutTime;
+}
+
+void VCButton::setModifierSnapFlash(bool enabled)
+{
+    m_modifierSnapFlash=enabled;
+}
+
+bool VCButton::modifierSnapFlash() const
+{
+    return m_modifierSnapFlash;
 }
 
 /*****************************************************************************
@@ -684,8 +700,32 @@ void VCButton::pressFunction()
     if (mode() == Doc::Design)
         return;
 
+    //// Handling of active modifier
+    // to work with modifier keys we need the possibility to change action if modifier key has been pressed
+    Action action=m_action;
+
+    //Flashbutton is pressed and snap-modifier is active, so we don't want to flash but toggle
+    if (action == Flash && m_doc->modifierSnapFlashActive() && state() != Active)
+    {
+        action=Toggle;    
+        //we need to know if we press the button again that we are in toggle mode, also if modifier isn't active then
+        m_activeWithSnapModifier=true;
+    }
+    //The button has been toggled with active snap-modifier, so we have to 
+    else if (action == Flash && m_activeWithSnapModifier)
+    {
+        m_activeWithSnapModifier=false;
+        //Error handling: If the button has been pressed with active snap-modifier, but isn't Active now, we don't need to
+        //go to Toggle mode. 
+        if (state() == Active)
+        {
+            action=Toggle;    
+        }
+    }
+
     Function* f = NULL;
-    if (m_action == Toggle)
+
+    if (action == Toggle)
     {
         f = m_doc->function(m_function);
         if (f == NULL)
@@ -724,7 +764,7 @@ void VCButton::pressFunction()
             emit functionStarting(m_function);
         }
     }
-    else if (m_action == Flash && state() == Inactive)
+    else if (action == Flash && state() == Inactive)
     {
         f = m_doc->function(m_function);
         if (f != NULL)
@@ -734,16 +774,24 @@ void VCButton::pressFunction()
             setState(Active);
         }
     }
-    else if (m_action == Blackout)
+    else if (action == Blackout)
     {
         m_doc->inputOutputMap()->toggleBlackout();
     }
-    else if (m_action == StopAll)
+    else if (action == StopAll)
     {
         if (stopAllFadeTime() == 0)
             m_doc->masterTimer()->stopAllFunctions();
         else
             m_doc->masterTimer()->fadeAndStopAll(stopAllFadeTime());
+    }
+    else if (action == Modifier)
+    {
+        if (m_modifierSnapFlash)
+        {
+            m_doc->setModifierSnapFlashActive(true);
+            setState(Active);
+        }
     }
 }
 
@@ -758,13 +806,23 @@ void VCButton::releaseFunction()
     if (mode() == Doc::Design)
         return;
 
-    if (m_action == Flash && state() == Active)
+    //If the Button has been started with pressed modifierkey "snap" we aren't in Flash mode, so do nothing in this case
+    //In this mode the Button has to be pressed again to release the function
+    if (m_action == Flash && state() == Active && !m_activeWithSnapModifier)
     {
         Function* f = m_doc->function(m_function);
         if (f != NULL)
         {
             f->unFlash(m_doc->masterTimer());
             resetIntensityOverrideAttribute();
+            setState(Inactive);
+        }
+    }
+    else if (m_action == Modifier)
+    {
+        if (m_modifierSnapFlash)
+        {
+            m_doc->setModifierSnapFlashActive(false);
             setState(Inactive);
         }
     }
@@ -782,8 +840,9 @@ void VCButton::slotFunctionRunning(quint32 fid)
 
 void VCButton::slotFunctionStopped(quint32 fid)
 {
-    if (fid == m_function && m_action == Toggle)
+    if (fid == m_function && (m_action == Toggle || m_activeWithSnapModifier))
     {
+        m_activeWithSnapModifier=false;
         resetIntensityOverrideAttribute();
         setState(Inactive);
         blink(250);
@@ -922,6 +981,8 @@ bool VCButton::loadXML(QXmlStreamReader &root)
             setAction(stringToAction(root.readElementText()));
             if (attrs.hasAttribute(KXMLQLCVCButtonStopAllFadeTime))
                 setStopAllFadeOutTime(attrs.value(KXMLQLCVCButtonStopAllFadeTime).toString().toInt());
+            if (attrs.hasAttribute(KXMLQLCVCButtonModifierSnapFlash))
+                setModifierSnapFlash(attrs.value(KXMLQLCVCButtonModifierSnapFlash).toString()==KXMLQLCTrue);
         }
         else if (root.name() == KXMLQLCVCButtonKey)
         {
@@ -979,6 +1040,10 @@ bool VCButton::saveXML(QXmlStreamWriter *doc)
     if (action() == StopAll && stopAllFadeTime() != 0)
     {
         doc->writeAttribute(KXMLQLCVCButtonStopAllFadeTime, QString::number(stopAllFadeTime()));
+    }
+    if (action() == Modifier)
+    {
+        doc->writeAttribute(KXMLQLCVCButtonModifierSnapFlash, modifierSnapFlash() ? KXMLQLCTrue : KXMLQLCFalse);
     }
     doc->writeCharacters(actionToString(action()));
     doc->writeEndElement();

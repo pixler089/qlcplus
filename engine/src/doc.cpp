@@ -85,6 +85,7 @@ Doc::Doc(QObject* parent, int universes)
     , m_latestPaletteId(0)
     , m_latestFunctionId(0)
     , m_startupFunctionId(Function::invalidId())
+    , m_modifierSnapFlash(false)
 {
     Bus::init(this);
     resetModified();
@@ -1383,4 +1384,14 @@ void Doc::postLoad()
         Q_ASSERT(function != NULL);
         function->postLoad();
     }
+}
+
+void Doc::setModifierSnapFlashActive(bool modifierActive)
+{
+    m_modifierSnapFlash=modifierActive;
+}
+
+bool Doc::modifierSnapFlashActive() const
+{
+    return m_modifierSnapFlash;
 }

@@ -642,6 +642,11 @@ private:
     void postLoad();
 
     QString m_errorLog;
+public:
+    void setModifierSnapFlashActive(bool modifierActive);
+    bool modifierSnapFlashActive() const;
+private:
+    bool m_modifierSnapFlash;
 };
 
 /** @} */

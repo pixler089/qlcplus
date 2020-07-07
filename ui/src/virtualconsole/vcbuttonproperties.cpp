@@ -77,10 +77,14 @@ VCButtonProperties::VCButtonProperties(VCButton* button, Doc* doc)
         m_blackout->setChecked(true);
     else if (button->action() == VCButton::StopAll)
         m_stopAll->setChecked(true);
+	else if (button->action() == VCButton::Modifier)
+		m_modifier->setChecked(true);
     else
         m_toggle->setChecked(true);
+
     m_fadeOutTime = m_button->stopAllFadeTime();
     m_fadeOutEdit->setText(Function::speedToString(m_fadeOutTime));
+	m_modifierSnapFlash->setChecked(m_button->modifierSnapFlash());
     slotActionToggled();
 
     /* Intensity adjustment */
@@ -98,6 +102,7 @@ VCButtonProperties::VCButtonProperties(VCButton* button, Doc* doc)
     connect(m_blackout, SIGNAL(toggled(bool)), this, SLOT(slotActionToggled()));
     connect(m_stopAll, SIGNAL(toggled(bool)), this, SLOT(slotActionToggled()));
     connect(m_flash, SIGNAL(toggled(bool)), this, SLOT(slotActionToggled()));
+    connect(m_modifier, SIGNAL(toggled(bool)), this, SLOT(slotActionToggled()));
 
     connect(m_speedDialButton, SIGNAL(toggled(bool)),
             this, SLOT(slotSpeedDialToggle(bool)));
@@ -156,6 +161,7 @@ void VCButtonProperties::slotActionToggled()
     m_fadeOutEdit->setEnabled(m_stopAll->isChecked());
     m_safFadeLabel->setEnabled(m_stopAll->isChecked());
     m_speedDialButton->setEnabled(m_stopAll->isChecked());
+	m_modifierSnapFlash->setEnabled(m_modifier->isChecked());
 }
 
 void VCButtonProperties::slotSpeedDialToggle(bool state)
@@ -228,8 +234,16 @@ void VCButtonProperties::accept()
         m_button->setAction(VCButton::StopAll);
         m_button->setStopAllFadeOutTime(m_fadeOutTime);
     }
+	else if (m_modifier->isChecked() == true)
+	{
+		m_button->setAction(VCButton::Modifier);
+	}
     else
+	{
         m_button->setAction(VCButton::Flash);
+	}
+
+	m_button->setModifierSnapFlash(m_modifierSnapFlash->isChecked());
 
     m_button->updateState();
 
