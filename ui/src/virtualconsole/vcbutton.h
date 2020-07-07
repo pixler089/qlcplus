@@ -52,8 +52,10 @@ class QEvent;
 #define KXMLQLCVCButtonActionToggle "Toggle"
 #define KXMLQLCVCButtonActionBlackout "Blackout"
 #define KXMLQLCVCButtonActionStopAll "StopAll"
+#define KXMLQLCVCButtonActionModifier "Modifier"
 
 #define KXMLQLCVCButtonStopAllFadeTime "FadeOut"
+#define KXMLQLCVCButtonModifierSnapFlash "ModifierSnapFlash"
 
 #define KXMLQLCVCButtonKey "Key"
 
@@ -221,6 +223,7 @@ signals:
 
 protected:
     ButtonState m_state;
+	bool m_activeWithSnapModifier;
     bool m_ledStyle;
 
     /*********************************************************************
@@ -256,7 +259,7 @@ public:
      * Blackout: Toggle blackout on/off.
      * StopAll: Stop all functions (panic button).
      */
-    enum Action { Toggle, Flash, Blackout, StopAll };
+    enum Action { Toggle, Flash, Blackout, StopAll, Modifier };
 
     /** Set this button's action */
     void setAction(Action action);
@@ -270,9 +273,13 @@ public:
     void setStopAllFadeOutTime(int ms);
     int stopAllFadeTime();
 
+    void setModifierSnapFlash(bool enabled);
+    bool modifierSnapFlash() const;
+
 protected:
     Action m_action;
     int m_blackoutFadeOutTime;
+	bool m_modifierSnapFlash;
 
     /*********************************************************************
      * Startup intensity adjustment
