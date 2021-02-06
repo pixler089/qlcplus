@@ -60,6 +60,7 @@
 #include "vcxypad.h"
 #include "vcclock.h"
 #include "doc.h"
+#include "programmer/vcprogrammer.h"
 
 #define SETTINGS_VC_SIZE "virtualconsole/size"
 
@@ -99,6 +100,7 @@ VirtualConsole::VirtualConsole(QWidget* parent, Doc* doc)
     , m_addAudioTriggersAction(NULL)
     , m_addClockAction(NULL)
     , m_addAnimationAction(NULL)
+    , m_addProgrammerAction(NULL)
 
     , m_toolsSettingsAction(NULL)
 
@@ -343,6 +345,9 @@ void VirtualConsole::initActions()
     m_addAnimationAction = new QAction(QIcon(":/animation.png"), tr("New Animation"), this);
     connect(m_addAnimationAction, SIGNAL(triggered(bool)), this, SLOT(slotAddAnimation()), Qt::QueuedConnection);
 
+    m_addProgrammerAction = new QAction(QIcon(":/programmer.png"), tr("New Programmer"), this);
+    connect(m_addProgrammerAction, SIGNAL(triggered(bool)), this, SLOT(slotAddProgrammer()), Qt::QueuedConnection);
+
     /* Put add actions under the same group */
     m_addActionGroup = new QActionGroup(this);
     m_addActionGroup->setExclusive(false);
@@ -360,6 +365,7 @@ void VirtualConsole::initActions()
     m_addActionGroup->addAction(m_addAudioTriggersAction);
     m_addActionGroup->addAction(m_addClockAction);
     m_addActionGroup->addAction(m_addAnimationAction);
+    m_addActionGroup->addAction(m_addProgrammerAction);
 
     /* Tools menu actions */
     m_toolsSettingsAction = new QAction(QIcon(":/configure.png"), tr("Virtual Console Settings"), this);
@@ -494,6 +500,7 @@ void VirtualConsole::initMenuBar()
     m_addMenu->addAction(m_addSoloFrameAction);
     m_addMenu->addAction(m_addLabelAction);
     m_addMenu->addAction(m_addClockAction);
+    m_addMenu->addAction(m_addProgrammerAction);
 
     /* Edit menu */
     m_editMenu = new QMenu(this);
@@ -568,6 +575,7 @@ void VirtualConsole::initMenuBar()
     m_toolbar->addAction(m_addLabelAction);
     m_toolbar->addAction(m_addAudioTriggersAction);
     m_toolbar->addAction(m_addClockAction);
+    m_toolbar->addAction(m_addProgrammerAction);
     m_toolbar->addSeparator();
     m_toolbar->addAction(m_editCutAction);
     m_toolbar->addAction(m_editCopyAction);
@@ -993,6 +1001,16 @@ void VirtualConsole::slotAddAnimation()
     m_doc->setModified();
 }
 
+void VirtualConsole::slotAddProgrammer()
+{
+    VCWidget* parent(closestParent());
+    if (parent == NULL)
+        return;
+
+    VCProgrammer* programmer = new VCProgrammer(parent, m_doc);
+    setupWidget(programmer, parent);
+    m_doc->setModified();
+}
 /*****************************************************************************
  * Tools menu callbacks
  *****************************************************************************/

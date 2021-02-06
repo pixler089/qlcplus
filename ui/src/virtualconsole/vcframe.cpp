@@ -55,6 +55,7 @@
 #include "vcclock.h"
 #include "apputil.h"
 #include "doc.h"
+#include "programmer/vcprogrammer.h"
 
 const QSize VCFrame::defaultSize(QSize(200, 200));
 
@@ -1255,6 +1256,18 @@ bool VCFrame::loadXML(QXmlStreamReader &root)
             {
                 addWidgetToPageMap(matrix);
                 matrix->show();
+            }
+        }
+        else if (root.name() == KXMLQLCVCPROGRAMMER)
+        {
+            /* Create a new xy pad into its parent */
+            VCProgrammer* programmer = new VCProgrammer(this, m_doc);
+            if (programmer->loadXML(root) == false)
+                delete programmer;
+            else
+            {
+                addWidgetToPageMap(programmer);
+                programmer->show();
             }
         }
         else

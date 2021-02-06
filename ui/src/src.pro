@@ -160,7 +160,30 @@ HEADERS += virtualconsole/addvcbuttonmatrix.h \
            virtualconsole/vcxypadfixtureeditor.h \
            virtualconsole/vcxypadpreset.h \
            virtualconsole/vcxypadproperties.h \
-           virtualconsole/virtualconsole.h
+           virtualconsole/virtualconsole.h \
+           virtualconsole/programmer/vcprogrammer.h \
+           virtualconsole/programmer/commandline/command/command.h \
+           virtualconsole/programmer/commandline/command/commandqueue.h \
+           virtualconsole/programmer/commandline/command/workspace/commandworkspaceenable.h \
+           virtualconsole/programmer/commandline/command/workspace/commandworkspacenew.h \
+           virtualconsole/programmer/commandline/command/workspace/commandworkspaceselect.h \
+           virtualconsole/programmer/commandline/commandparser/commandtext.h \
+           virtualconsole/programmer/commandline/commandparser/common/privateobjectselection/stateobjectselectionsubstate.h \
+           virtualconsole/programmer/commandline/commandparser/common/privateobjectselection/stateobjectselectionsubstateint.h \
+           virtualconsole/programmer/commandline/commandparser/common/privateobjectselection/stateobjectselectionsubstateoperator.h \
+           virtualconsole/programmer/commandline/commandparser/common/stateinitial.h \
+           virtualconsole/programmer/commandline/commandparser/common/stateobjectselection.h \
+           virtualconsole/programmer/commandline/commandparser/fixture/statefixturemain.h \
+           virtualconsole/programmer/commandline/commandparser/fixture/statefixturesetvalues.h \
+           virtualconsole/programmer/commandline/commandparser/parser.h \
+           virtualconsole/programmer/commandline/commandparser/state.h \
+           virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacemain.h \
+           virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacenew.h \
+           virtualconsole/programmer/commandline/commandtextedit.h \
+           virtualconsole/programmer/commandline/helper/htmlstring.h \
+           virtualconsole/programmer/commandline/objects/object.h \
+           virtualconsole/programmer/commandline/objects/objectmanager.h \
+           virtualconsole/programmer/commandline/objects/workspace/workspace.h
 
 # Forms
 FORMS += aboutbox.ui \
@@ -335,7 +358,30 @@ SOURCES += virtualconsole/addvcbuttonmatrix.cpp \
            virtualconsole/vcxypadfixtureeditor.cpp \
            virtualconsole/vcxypadpreset.cpp \
            virtualconsole/vcxypadproperties.cpp \
-           virtualconsole/virtualconsole.cpp
+           virtualconsole/virtualconsole.cpp \
+           virtualconsole/programmer/vcprogrammer.cpp \
+           virtualconsole/programmer/commandline/command/command.cpp \
+           virtualconsole/programmer/commandline/command/commandqueue.cpp \
+           virtualconsole/programmer/commandline/command/workspace/commandworkspaceenable.cpp \
+           virtualconsole/programmer/commandline/command/workspace/commandworkspacenew.cpp \
+           virtualconsole/programmer/commandline/command/workspace/commandworkspaceselect.cpp \
+           virtualconsole/programmer/commandline/commandparser/commandtext.cpp \
+           virtualconsole/programmer/commandline/commandparser/common/privateobjectselection/stateobjectselectionsubstate.cpp \
+           virtualconsole/programmer/commandline/commandparser/common/privateobjectselection/stateobjectselectionsubstateint.cpp \
+           virtualconsole/programmer/commandline/commandparser/common/privateobjectselection/stateobjectselectionsubstateoperator.cpp \
+           virtualconsole/programmer/commandline/commandparser/common/stateinitial.cpp \
+           virtualconsole/programmer/commandline/commandparser/common/stateobjectselection.cpp \
+           virtualconsole/programmer/commandline/commandparser/fixture/statefixturemain.cpp \
+           virtualconsole/programmer/commandline/commandparser/fixture/statefixturesetvalues.cpp \
+           virtualconsole/programmer/commandline/commandparser/parser.cpp \
+           virtualconsole/programmer/commandline/commandparser/state.cpp \
+           virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacemain.cpp \
+           virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacenew.cpp \
+           virtualconsole/programmer/commandline/commandtextedit.cpp \
+           virtualconsole/programmer/commandline/helper/htmlstring.cpp \
+           virtualconsole/programmer/commandline/objects/object.cpp \
+           virtualconsole/programmer/commandline/objects/objectmanager.cpp \
+           virtualconsole/programmer/commandline/objects/workspace/workspace.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4) {
 HEADERS += videoeditor.h showmanager/videoitem.h videoprovider.h
