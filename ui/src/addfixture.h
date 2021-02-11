@@ -73,6 +73,9 @@ public:
     /** Get the assigned friendly name */
     QString name() const;
 
+    /** Get the ID that can be used by user to address the fixture */
+    quint32 userID() const;
+
     /** Get the assigned DMX address */
     quint32 address() const;
 
@@ -97,6 +100,7 @@ protected:
     QLCFixtureMode* m_mode;
     quint32 m_fixtureID;
 
+    quint32 m_userID;
     QString m_nameValue;
 
     quint32 m_addressValue;
@@ -183,6 +187,9 @@ protected slots:
 
     /** Callback for friendly name editing */
     void slotNameEdited(const QString &text);
+
+    /** callback for adding a user ID to the fixture */
+    void slotUserIDSpinChanged(int value);
 
     /** Callback for fixture amount value changes */
     void slotAmountSpinChanged(int value);

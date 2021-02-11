@@ -93,7 +93,8 @@ public:
         Model            = 1 << 5,
         ShowGroups       = 1 << 6,
         ShowHeads        = 1 << 7,
-        ChannelSelection = 1 << 8
+        ChannelSelection = 1 << 8,
+        UserIDNumber     = 1 << 9
     };
 
     void setFlags(quint32 flags);
@@ -101,6 +102,7 @@ public:
     quint32 flags();
 
 private:
+    int m_userIDColumn;
     int m_uniColumn;
     int m_addressColumn;
     int m_typeColumn;

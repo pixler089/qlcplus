@@ -336,7 +336,8 @@ void FixtureManager::initDataView()
     /* Create a tree widget to the left part of the splitter */
     quint32 treeFlags = FixtureTreeWidget::UniverseNumber |
                         FixtureTreeWidget::AddressRange |
-                        FixtureTreeWidget::ShowGroups;
+                        FixtureTreeWidget::ShowGroups |
+                        FixtureTreeWidget::UserIDNumber;
 
     m_fixtures_tree = new FixtureTreeWidget(m_doc, treeFlags, this);
     m_fixtures_tree->setIconSize(QSize(32, 32));
@@ -981,6 +982,7 @@ void FixtureManager::addFixture()
     quint32 latestFxi = Fixture::invalidId();
 
     QString name = af.name();
+    quint32 userID = af.userID();
     quint32 address = af.address();
     quint32 universe = af.universe();
     quint32 channels = af.channels();
@@ -1038,6 +1040,8 @@ void FixtureManager::addFixture()
         fxi->setAddress(address + (i * channels) + (i * gap));
         fxi->setUniverse(universe);
         fxi->setName(modname);
+        //BOME check if already exists
+        fxi->setUserID(userID+i);
         /* Set a fixture definition & mode if they were
            selected. Otherwise create a fixture definition
            and mode for a generic dimmer. */
@@ -1366,6 +1370,11 @@ void FixtureManager::editFixtureProperties()
             if (fxi->name() != af.name())
             {
                 fxi->setName(af.name());
+                changed = true;
+            }
+            if (fxi->userID() != af.userID())
+            {
+                fxi->setUserID(af.userID());
                 changed = true;
             }
             if (fxi->universe() != af.universe())

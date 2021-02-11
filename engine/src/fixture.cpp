@@ -42,6 +42,7 @@
 Fixture::Fixture(QObject* parent) : QObject(parent)
 {
     m_id = Fixture::invalidId();
+    m_userID = Fixture::invalidId();
 
     m_address = 0;
     m_channels = 0;
@@ -80,6 +81,19 @@ quint32 Fixture::id() const
 quint32 Fixture::invalidId()
 {
     return UINT_MAX;
+}
+
+/*********************************************************************
+ * User ID
+ *********************************************************************/
+
+void Fixture::setUserID(quint32 userID)
+{
+    if (userID>0)
+        m_userID=userID;
+    else
+        m_userID=invalidId();
+    emit changed(m_id);
 }
 
 /*****************************************************************************
@@ -931,6 +945,7 @@ bool Fixture::loadXML(QXmlStreamReader &xmlDoc, Doc *doc,
     QString modeName;
     QString name;
     quint32 id = Fixture::invalidId();
+    quint32 userID = Fixture::invalidId();
     quint32 universe = 0;
     quint32 address = 0;
     quint32 channels = 0;
@@ -972,6 +987,10 @@ bool Fixture::loadXML(QXmlStreamReader &xmlDoc, Doc *doc,
         else if (xmlDoc.name() == KXMLFixtureID)
         {
             id = xmlDoc.readElementText().toUInt();
+        }
+        else if (xmlDoc.name() == KXMLFixtureUserID)
+        {
+            userID = xmlDoc.readElementText().toUInt();
         }
         else if (xmlDoc.name() == KXMLFixtureName)
         {
@@ -1132,6 +1151,7 @@ bool Fixture::loadXML(QXmlStreamReader &xmlDoc, Doc *doc,
     for (int i = 0; i < modifierIndices.count(); i++)
         setChannelModifier(modifierIndices.at(i), modifierPointers.at(i));
     setID(id);
+    setUserID(userID);
 
     return true;
 }
@@ -1173,6 +1193,8 @@ bool Fixture::saveXML(QXmlStreamWriter *doc) const
 
     /* ID */
     doc->writeTextElement(KXMLFixtureID, QString::number(id()));
+    /* UserID */
+    doc->writeTextElement(KXMLFixtureUserID, QString::number(userID()));
     /* Name */
     doc->writeTextElement(KXMLFixtureName, m_name);
     /* Universe */

@@ -35,6 +35,7 @@ FixtureTreeWidget::FixtureTreeWidget(Doc *doc, quint32 flags, QWidget *parent)
     , m_universesCount(0)
     , m_fixturesCount(0)
     , m_channelsCount(0)
+    , m_userIDColumn(0)
     , m_uniColumn(-1)
     , m_addressColumn(-1)
     , m_typeColumn(-1)
@@ -65,6 +66,11 @@ void FixtureTreeWidget::setFlags(quint32 flags)
     QStringList labels;
     labels << tr("Name");
 
+    if (flags & UserIDNumber)
+    {
+        m_userIDColumn = columnIdx++;
+        labels << tr("UserID");
+    }
     if (flags & UniverseNumber)
     {
         m_uniColumn = columnIdx++;
@@ -189,6 +195,15 @@ void FixtureTreeWidget::updateFixtureItem(QTreeWidgetItem* item, Fixture* fixtur
     {
         item->setText(m_uniColumn, QString("%1").arg(fixture->universe() + 1));
         item->setTextAlignment(m_uniColumn, Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+
+    if (m_userIDColumn)
+    {
+        QString s;
+        if (fixture->userID()!=Fixture::invalidId())
+        {
+            item->setText(m_userIDColumn, s.asprintf("%3d", fixture->userID()));
+        }
     }
 
     if (m_addressColumn)

@@ -49,6 +49,7 @@ class Doc;
 #define KXMLFixtureUniverse "Universe"
 #define KXMLFixtureAddress "Address"
 #define KXMLFixtureID "ID"
+#define KXMLFixtureUserID "UserID"
 #define KXMLFixtureGeneric "Generic"
 #define KXMLFixtureRGBPanel "RGBPanel"
 #define KXMLFixtureChannels "Channels"
@@ -126,6 +127,34 @@ public:
 protected:
     /** Fixture ID */
     quint32 m_id;
+
+    /*********************************************************************
+     * User ID
+     *********************************************************************/
+public:
+    /*
+     * @brief Set the UserID.
+     *
+     * The user ID can be changed (is not used internally) without any problem. The user ID is
+     * used to select fixtures by command line using the programmer
+     */
+    void setUserID(quint32 userID);
+
+    /*
+     * @brief Returns the UserID.
+     *
+     * The user ID can be changed (is not used internally) without any problem. The user ID is
+     * used to select fixtures by command line using the programmer
+     */
+    quint32 userID() const { return m_userID; };
+
+private:
+    /*
+     * The user ID can be changed (is not used internally) without any problem. The user ID is
+     * used to select fixtures by command line using the programmer
+     */
+    quint32 m_userID;
+
 
     /*********************************************************************
      * Name

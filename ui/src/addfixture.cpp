@@ -83,6 +83,8 @@ AddFixture::AddFixture(QWidget* parent, const Doc* doc, const Fixture* fxi)
             this, SLOT(slotChannelsChanged(int)));
     connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
             this, SLOT(slotNameEdited(const QString&)));
+    connect(m_userIDSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotUserIDSpinChanged(int)));
     connect(m_gapSpin, SIGNAL(valueChanged(int)),
             this, SLOT(slotGapSpinChanged(int)));
     connect(m_amountSpin, SIGNAL(valueChanged(int)),
@@ -124,6 +126,12 @@ AddFixture::AddFixture(QWidget* parent, const Doc* doc, const Fixture* fxi)
         m_nameEdit->setText(fxi->name());
         slotNameEdited(fxi->name());
         m_nameEdit->setModified(true); // Prevent auto-naming
+
+        // UserID
+        if (fxi->userID()==Fixture::invalidId())
+            m_userIDSpin->setValue(0);
+        else
+            m_userIDSpin->setValue(fxi->userID());
 
         // Mode
         int index = m_modeCombo->findText(fxi->fixtureMode()->name());
@@ -186,6 +194,11 @@ QLCFixtureMode *AddFixture::mode() const
 QString AddFixture::name() const
 {
     return m_nameValue;
+}
+
+quint32 AddFixture::userID() const
+{
+    return m_userID;
 }
 
 quint32 AddFixture::address() const
@@ -523,6 +536,11 @@ void AddFixture::slotNameEdited(const QString &text)
     m_nameValue = text;
 }
 
+void AddFixture::slotUserIDSpinChanged(int value)
+{
+    m_userID=value;
+}
+
 void AddFixture::slotAmountSpinChanged(int value)
 {
     m_amountValue = value;
@@ -568,6 +586,7 @@ void AddFixture::slotSelectionChanged()
             m_nameEdit->setModified(false);
         }
         m_nameEdit->setEnabled(false);
+        m_userIDSpin->setEnabled(false);
 
         m_channelsSpin->setValue(0);
         m_channelList->clear();
@@ -658,6 +677,8 @@ void AddFixture::slotSelectionChanged()
     /* Guide the user to edit the friendly name field */
     m_nameEdit->setSelection(0, m_nameEdit->text().length());
     m_nameEdit->setFocus();
+
+    m_userIDSpin->setEnabled(true);
 
     m_addressSpin->setEnabled(true);
     m_universeCombo->setEnabled(true);
