@@ -1,11 +1,12 @@
 #ifndef COMMANDTEXTEDIT_H
 #define COMMANDTEXTEDIT_H
 
-#include <QTextEdit>
-#include <memory>
 #include "virtualconsole/programmer/commandline/command/command.h"
 #include "virtualconsole/programmer/commandline/commandparser/commandtext.h"
 #include "virtualconsole/programmer/commandline/commandparser/parser.h"
+#include <QTextEdit>
+#include <memory>
+#include <functional>
 
 namespace Command
 {

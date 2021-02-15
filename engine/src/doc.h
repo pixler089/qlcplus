@@ -292,6 +292,13 @@ public:
     Fixture* fixture(quint32 id) const;
 
     /**
+     * Get the fixture instance that has the given UserID
+     *
+     * @param id The UserID of the fixture to get
+     */
+    Fixture* fixtureByUserID(quint32 id) const;
+
+    /**
      * Get a list of fixtures ordered by ID
      */
     QList<Fixture*> const& fixtures() const;
@@ -337,6 +344,9 @@ private slots:
 protected:
     /** Fixtures hash: < ID, Fixture instance > */
     QHash <quint32, Fixture*> m_fixtures;
+
+    /** Fixtures sorted by UserID */
+    QHash <quint32, Fixture*> m_fixturesByUserID;
 
     /** Fixtures list cache */
     bool m_fixturesListCacheUpToDate;

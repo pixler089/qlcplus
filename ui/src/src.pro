@@ -162,6 +162,7 @@ HEADERS += virtualconsole/addvcbuttonmatrix.h \
            virtualconsole/vcxypadproperties.h \
            virtualconsole/virtualconsole.h \
            virtualconsole/programmer/vcprogrammer.h \
+           virtualconsole/programmer/vcprogrammerselectedobjects.h \
            virtualconsole/programmer/commandline/command/command.h \
            virtualconsole/programmer/commandline/command/commandqueue.h \
            virtualconsole/programmer/commandline/command/workspace/commandworkspaceenable.h \
@@ -360,6 +361,7 @@ SOURCES += virtualconsole/addvcbuttonmatrix.cpp \
            virtualconsole/vcxypadproperties.cpp \
            virtualconsole/virtualconsole.cpp \
            virtualconsole/programmer/vcprogrammer.cpp \
+           virtualconsole/programmer/vcprogrammerselectedobjects.cpp \
            virtualconsole/programmer/commandline/command/command.cpp \
            virtualconsole/programmer/commandline/command/commandqueue.cpp \
            virtualconsole/programmer/commandline/command/workspace/commandworkspaceenable.cpp \

@@ -32,6 +32,7 @@
 #include "vcxypadpreset.h"
 #include "dmxsource.h"
 #include "vcwidget.h"
+#include "commandline/command/icommandgui.h"
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
@@ -56,7 +57,7 @@ class CommandTextEdit;
 
 #define KXMLQLCVCPROGRAMMER "Programmer"
 
-class VCProgrammer : public VCWidget, public DMXSource
+class VCProgrammer : public VCWidget, public DMXSource, public Command::ICommandGui
 {
     Q_OBJECT
     Q_DISABLE_COPY(VCProgrammer)

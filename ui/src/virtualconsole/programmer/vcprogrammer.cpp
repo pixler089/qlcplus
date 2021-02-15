@@ -101,6 +101,8 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     m_doc->masterTimer()->registerDMXSource(this);
     connect(m_doc->inputOutputMap(), SIGNAL(universeWritten(quint32,QByteArray)),
             this, SLOT(slotUniverseWritten(quint32,QByteArray)));
+
+	m_commandTextEdit->setCommandGuiInterface(this);
 }
 
 VCProgrammer::~VCProgrammer()

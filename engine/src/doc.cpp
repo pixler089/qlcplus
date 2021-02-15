@@ -431,6 +431,18 @@ bool Doc::addFixture(Fixture* fixture, quint32 id)
 
     fixture->setID(id);
     m_fixtures.insert(id, fixture);
+    if (fixture->userID()!=Fixture::invalidId())
+    {
+        if (m_fixturesByUserID.contains(fixture->userID()))
+        {
+            qWarning() << Q_FUNC_INFO << "fixture" << id << ": UserID " <<fixture->userID() << " is already used!";
+            fixture->setUserID(Fixture::invalidId());
+        }
+        else
+        {
+            m_fixturesByUserID.insert(fixture->userID(), fixture);
+        }
+    }
     m_fixturesListCacheUpToDate = false;
 
     /* Patch fixture change signals thru Doc */
@@ -492,6 +504,7 @@ bool Doc::deleteFixture(quint32 id)
         Fixture* fxi = m_fixtures.take(id);
         Q_ASSERT(fxi != NULL);
         m_fixturesListCacheUpToDate = false;
+        m_fixturesByUserID.remove(fxi->userID());
 
         /* Keep track of fixture addresses */
         QMutableHashIterator <uint,uint> it(m_addresses);
@@ -534,6 +547,7 @@ bool Doc::replaceFixtures(QList<Fixture*> newFixturesList)
     }
     m_latestFixtureId = 0;
     m_addresses.clear();
+    m_fixturesByUserID.clear();
 
     foreach(Fixture *fixture, newFixturesList)
     {
@@ -545,6 +559,7 @@ bool Doc::replaceFixtures(QList<Fixture*> newFixturesList)
         newFixture->setName(fixture->name());
         newFixture->setAddress(fixture->address());
         newFixture->setUniverse(fixture->universe());
+        newFixture->setUserID(fixture->userID());
 
         if (fixture->fixtureDef() == NULL ||
             (fixture->fixtureDef()->manufacturer() == KXMLFixtureGeneric &&
@@ -577,6 +592,18 @@ bool Doc::replaceFixtures(QList<Fixture*> newFixturesList)
 
         newFixture->setExcludeFadeChannels(fixture->excludeFadeChannels());
         m_fixtures.insert(id, newFixture);
+        if (fixture->userID()!=Fixture::invalidId())
+        {
+            if (m_fixturesByUserID.contains(fixture->userID()))
+            {
+                qWarning() << Q_FUNC_INFO << "fixture" << id << ": UserID " <<fixture->userID() << " is already used!";
+                fixture->setUserID(Fixture::invalidId());
+            }
+            else
+            {
+                m_fixturesByUserID.insert(fixture->userID(), fixture);
+            }
+        }
         m_fixturesListCacheUpToDate = false;
 
         /* Patch fixture change signals thru Doc */
@@ -658,6 +685,11 @@ QList<Fixture*> const& Doc::fixtures() const
 Fixture* Doc::fixture(quint32 id) const
 {
     return m_fixtures.value(id, NULL);
+}
+
+Fixture* Doc::fixtureByUserID(quint32 id) const
+{
+    return m_fixturesByUserID.value(id, NULL);
 }
 
 quint32 Doc::fixtureForAddress(quint32 universeAddress) const

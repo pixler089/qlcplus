@@ -5,6 +5,7 @@
 
 #include <string>
 #include <list>
+#include <functional>
 
 namespace Command
 {
@@ -22,7 +23,13 @@ public:
 	CommandBase(EExecuteType executeType, Object::Type objectType);
 	~CommandBase();
 	///@brief executes the command
-	virtual void execute() = 0;
+	virtual void execute()
+	{
+		if (m_genericCommand && m_commandGuiInterface)
+		{
+			m_genericCommand(m_commandGuiInterface);
+		}
+	}
 	///@brief 
 	virtual EExecuteType getExecuteType() { return m_executeType; };
 	void setWorkspaceId(int id) {m_workspaceID=id;};
@@ -30,6 +37,7 @@ public:
 protected:
 	ICommandGui* getCommandGui() const { return m_commandGuiInterface; };
 private:
+	std::function<void(ICommandGui* commandGui)> m_genericCommand;
 	Object::Type m_objectType;
 	EExecuteType m_executeType;
 	int m_workspaceID=-1;

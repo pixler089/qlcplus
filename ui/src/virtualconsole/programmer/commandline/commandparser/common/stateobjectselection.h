@@ -31,6 +31,7 @@ public:
 	virtual void returnAfterStacked(CommandText& commandText) override;
 	virtual std::list<int> getObjects() const { return m_objectList; };
 	bool charIsStartcharForSelection(char charToCheck) const;
+	std::shared_ptr<Command::CommandBase> getResultingCommand() const;
 private:
 	std::string m_commandBuffer;
 	std::list<int> m_objectList;

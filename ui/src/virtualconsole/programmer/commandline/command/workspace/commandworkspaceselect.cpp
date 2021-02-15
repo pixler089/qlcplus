@@ -19,6 +19,6 @@ void CommandWorkspaceSelect::execute()
 {
 	if (getCommandGui())
 	{
-		getCommandGui()->setCurrentWorkspace(m_workspaceID);
+		getCommandGui()->commandSetCurrentWorkspace(m_workspaceID);
 	}
 }
