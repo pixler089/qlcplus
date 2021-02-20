@@ -27,7 +27,7 @@ public:
 	///@brief returns the ParserState that should be used to parse the next char. 0, if no ParserState available for this char.
 	virtual std::shared_ptr<State> getFollowingParserState() override;
 	///Returns the command parsed. Returns 0 in case of an error.
-	virtual std::shared_ptr<Command::CommandBase> getResultingCommand() const override;
+	virtual Command::CommandBase::List getResultingCommand() const override;
 	///@brief returns the type of the objeect the command is related to
 	Object::Type getObjectType() const { return m_objectType; };
 private:

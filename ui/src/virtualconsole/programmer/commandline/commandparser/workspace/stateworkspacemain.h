@@ -29,7 +29,7 @@ public:
 	virtual std::shared_ptr<State> getFollowingParserState() override;
 	virtual bool wantsBeStacked() const override { return true; };
 	///Returns the command parsed. Returns 0 in case of an error.
-	virtual std::shared_ptr<Command::CommandBase> getResultingCommand() const override;
+	virtual Command::CommandBase::List getResultingCommand() const override;
 	virtual void getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const override;
 private:
 	enum class CommandType

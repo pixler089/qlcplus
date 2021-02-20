@@ -6,15 +6,18 @@
 #include <string>
 #include <list>
 #include <functional>
+#include <memory>
 
 namespace Command
 {
 
 class ICommandGui;
 
+
 class CommandBase
 {
 public:
+	using List=std::list<std::shared_ptr<CommandBase>>;
 	enum class EExecuteType
 	{
 		GUI,
@@ -32,6 +35,7 @@ public:
 	}
 	///@brief 
 	virtual EExecuteType getExecuteType() { return m_executeType; };
+	void setCommand(std::function<void(ICommandGui* commandGui)> cmd) {m_genericCommand=cmd;};
 	void setWorkspaceId(int id) {m_workspaceID=id;};
 	void setCommandGuiInterface(ICommandGui* commandGuiInterface){m_commandGuiInterface=commandGuiInterface;};
 protected:

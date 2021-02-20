@@ -119,7 +119,7 @@ std::shared_ptr<State> StateWorkspaceMain::getFollowingParserState()
 	return m_followingParserState;
 }
 
-std::shared_ptr<Command::CommandBase> StateWorkspaceMain::getResultingCommand() const
+Command::CommandBase::List StateWorkspaceMain::getResultingCommand() const
 {
 	//First we handle commands that our State has to create (there don't exist substates)
 	if (m_commandType==CommandType::Select)
@@ -127,15 +127,15 @@ std::shared_ptr<Command::CommandBase> StateWorkspaceMain::getResultingCommand() 
 		std::shared_ptr<Command::CommandWorkspaceSelect> commandReturn(new Command::CommandWorkspaceSelect());	
 		if (!m_stateSelection || m_stateSelection->getObjects().size()!=1)
 		{
-			return nullptr;
+			return Command::CommandBase::List();
 		}
 		commandReturn->setWorkspaceToSelect(m_stateSelection->getObjects().front().m_objectID);
 
-		return commandReturn;
+		return Command::CommandBase::List{commandReturn};
 	}
 	//No we handle commands that will be created by a substate
 	if (!m_followingParserState)
-		return nullptr;
+		return Command::CommandBase::List();
 	return m_followingParserState->getResultingCommand();
 }
 

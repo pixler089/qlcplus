@@ -74,10 +74,9 @@ std::shared_ptr<State> StateWorkspaceNew::getFollowingParserState()
 	return 0;
 }
 
-std::shared_ptr<Command::CommandBase> StateWorkspaceNew::getResultingCommand() const
+Command::CommandBase::List StateWorkspaceNew::getResultingCommand() const
 {
-	std::shared_ptr<Command::CommandBase> returnCommand(new Command::CommandWorkspaceNew(getId(), m_strName));
-	return returnCommand;
+	return Command::CommandBase::List{std::make_shared<Command::CommandWorkspaceNew>(Command::CommandWorkspaceNew(getId(), m_strName))};
 }
 
 void StateWorkspaceNew::getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const

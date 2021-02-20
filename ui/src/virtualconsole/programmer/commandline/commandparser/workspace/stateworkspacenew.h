@@ -32,7 +32,7 @@ public:
 	///@brief returns the ParserState that should be used to parse the next char. 0, if no ParserState available for this char.
 	virtual std::shared_ptr<State> getFollowingParserState() override;
 	///Returns the command parsed. Returns 0 in case of an error.
-	virtual std::shared_ptr<Command::CommandBase> getResultingCommand() const override;
+	virtual Command::CommandBase::List getResultingCommand() const override;
 	///Method to get the help and hint-Messages of the State
 	virtual void getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const override;
 private:

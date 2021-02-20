@@ -105,10 +105,10 @@ bool Parser::parseCommand(std::string command, CommandText& formattedCommandText
 	}
 	if (!hasError)
 	{
-		std::shared_ptr<Command::CommandBase> cmd=parserStateInitial->getResultingCommand();
-		if (cmd)
+		auto cmd=parserStateInitial->getResultingCommand();
+		if (cmd.size())
 		{
-			m_commands.push_back(cmd);
+			m_commands.splice(m_commands.end(), cmd);
 		}
 	}
 	return true;

@@ -77,3 +77,10 @@ void StateFixtureMain::returnAfterStacked(CommandText& commandText)
 		m_stateFollowing.reset(new StateFixtureSetValues());
 	}
 }
+
+Command::CommandBase::List StateFixtureMain::getResultingCommand() const
+{
+	Command::CommandBase::List cmdList=m_stateSelection->getResultingCommand();
+	cmdList.splice(cmdList.end(), m_stateFollowing->getResultingCommand());
+	return cmdList;
+}

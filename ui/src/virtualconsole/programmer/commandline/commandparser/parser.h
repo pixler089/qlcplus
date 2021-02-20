@@ -25,13 +25,13 @@ public:
 	///@brief returns a human readable error message if the last command wasn't parsed successful.
 	std::string getErrorMessage() const;
 	///@brief returns a copy of the current command
-	std::list<std::shared_ptr<Command::CommandBase>> getCommands() const { return m_commands; };
+	Command::CommandBase::List getCommands() const { return m_commands; };
 
 	///@brief deletes the data of the last parsed command
 	void clear(); 
 
 private:
-	std::list<std::shared_ptr<Command::CommandBase>> m_commands;
+	Command::CommandBase::List m_commands;
 	std::list<std::shared_ptr<State>> m_stateStack;
 };
 

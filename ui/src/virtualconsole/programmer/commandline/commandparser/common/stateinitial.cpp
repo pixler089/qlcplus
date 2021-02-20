@@ -82,9 +82,9 @@ std::shared_ptr<State> StateInitial::getFollowingParserState()
 	return m_followingParserState;
 }
 
-std::shared_ptr<Command::CommandBase> StateInitial::getResultingCommand() const
+Command::CommandBase::List StateInitial::getResultingCommand() const
 {
 	if (!m_followingParserState)
-		return 0;
+		return Command::CommandBase::List();
 	return m_followingParserState->getResultingCommand();
 }

@@ -4,11 +4,7 @@
 #include <string>
 #include <list>
 #include <memory>
-
-namespace Command
-{
-	class CommandBase;
-}
+#include "../command/command.h"
 
 namespace CommandParser
 {
@@ -50,7 +46,7 @@ public:
 		std::ignore=hintMessage;
 	};
 	///Returns the command parsed. Returns 0 in case of an error.
-	virtual std::shared_ptr<Command::CommandBase> getResultingCommand() const {return nullptr; };
+	virtual Command::CommandBase::List getResultingCommand() const {return Command::CommandBase::List();};
 };
 
 };

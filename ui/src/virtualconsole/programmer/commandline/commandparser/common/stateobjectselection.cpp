@@ -110,7 +110,7 @@ bool StateObjectSelection::charIsStartcharForSelection(char charToCheck) const
 	return StateObjectSelectionSubstate::getStateForChar(charToCheck, false)!=nullptr;
 }
 
-std::shared_ptr<Command::CommandBase> StateObjectSelection::getResultingCommand() const
+Command::CommandBase::List StateObjectSelection::getResultingCommand() const
 {
 	/*
 	//First we handle commands that our State has to create (there don't exist substates)
@@ -130,6 +130,6 @@ std::shared_ptr<Command::CommandBase> StateObjectSelection::getResultingCommand(
 		return nullptr;
 	return m_followingParserState->getResultingCommand();
 	*/
-	return nullptr;
+	return Command::CommandBase::List();
 }
 

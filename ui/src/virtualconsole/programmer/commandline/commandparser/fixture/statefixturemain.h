@@ -34,6 +34,7 @@ public:
 	///@brief returns the ParserState that should be used to parse the next char. 0, if no ParserState available for this char.
 	virtual std::shared_ptr<State> getFollowingParserState() override;
 	virtual void getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const override;
+	virtual Command::CommandBase::List getResultingCommand() const override;
 private:
 	enum class InternalState
 	{

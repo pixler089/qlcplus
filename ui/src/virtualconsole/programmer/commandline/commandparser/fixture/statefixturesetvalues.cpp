@@ -154,8 +154,8 @@ void StateFixtureSetValues::getHelpHintMessages(std::string& helpMessage, std::s
 	}
 }
 
-std::shared_ptr<Command::CommandBase> StateFixtureSetValues::getResultingCommand() const
+Command::CommandBase::List StateFixtureSetValues::getResultingCommand() const
 {
-	return nullptr;
+	return Command::CommandBase::List();
 }
 
