@@ -129,7 +129,7 @@ std::shared_ptr<Command::CommandBase> StateWorkspaceMain::getResultingCommand() 
 		{
 			return nullptr;
 		}
-		commandReturn->setWorkspaceToSelect(m_stateSelection->getObjects().front());
+		commandReturn->setWorkspaceToSelect(m_stateSelection->getObjects().front().m_objectID);
 
 		return commandReturn;
 	}

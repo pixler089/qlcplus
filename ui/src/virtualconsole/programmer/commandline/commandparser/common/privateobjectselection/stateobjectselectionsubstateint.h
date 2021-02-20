@@ -2,6 +2,7 @@
 #define COMMANDPARSER_STATEOBJECTSELECTIONSUBSTATEINT_H
 
 #include "stateobjectselectionsubstate.h"
+#include "../../../..//vcprogrammerselectedobjects.h"
 
 namespace CommandParser
 {
@@ -25,10 +26,10 @@ public:
 	///@brief returns the ParserState that should be used to parse the next char. 0, if no ParserState available for this char.
 	virtual std::shared_ptr<State> getFollowingParserState() override;
 	virtual void getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const override;
-	virtual std::list<int> getObjects() const { return m_objectList; };
+	virtual VcProgrammerSelectedObjects getObjects() const { return m_objectList; };
 private:
 	std::string m_buffer;
-	std::list<int> m_objectList;
+	VcProgrammerSelectedObjects m_objectList;
 };
 
 }

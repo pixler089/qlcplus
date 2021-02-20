@@ -44,7 +44,7 @@ void StateObjectSelectionSubstateInt::finish(CommandText& formattedCommandText)
 	{
 		try
 		{
-			m_objectList.push_back(std::stoi(m_buffer));
+			m_objectList.addObject(std::stoi(m_buffer));
 		}
 		catch (...)
 		{

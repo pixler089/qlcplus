@@ -2,6 +2,7 @@
 #define COMMANDPARSER_STATEOBJECTSELECTIONSUBSTATE_H
 
 #include "../../state.h"
+#include "../../../..//vcprogrammerselectedobjects.h"
 
 namespace CommandParser
 {
@@ -31,11 +32,11 @@ public:
 	/////////////////////////
 	// Substate specific ////
 
-	virtual void setObjectListLhs(const std::list<int>& objectsLhs)
+	virtual void setObjectListLhs(const VcProgrammerSelectedObjects& objectsLhs)
 	{
 		std::ignore=objectsLhs;
 	};
-	virtual std::list<int> getObjects() const = 0;
+	virtual VcProgrammerSelectedObjects getObjects() const = 0;
 	static std::shared_ptr<StateObjectSelectionSubstate> getStateForChar(char aChar, bool isSingleSelect);
 	bool isSingleSelect() const { return m_singleSelect;};
 private:

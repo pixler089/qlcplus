@@ -81,7 +81,7 @@ void StateObjectSelection::getHelpHintMessages(std::string& helpMessage, std::st
 		stream<<helpCommandsMultiselect;
 	stream<<std::endl<<"\nSelected Objects:\n"<<std::endl;
 	bool isFirstObject=true;
-	for (int object : m_objectList)
+	for (int object : m_objectList.getCurrentObjects())
 	{
 		if (isFirstObject)
 		{

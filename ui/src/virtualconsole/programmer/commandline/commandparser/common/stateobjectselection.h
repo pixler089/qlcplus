@@ -2,6 +2,7 @@
 #define COMMANDPARSER_STATEOBJECTSELECTION_H
 
 #include "../state.h"
+#include "../../..//vcprogrammerselectedobjects.h"
 
 namespace CommandParser
 {
@@ -29,15 +30,15 @@ public:
 	virtual bool wantsBeStacked() const override { return true; };
 	virtual void getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const override;
 	virtual void returnAfterStacked(CommandText& commandText) override;
-	virtual std::list<int> getObjects() const { return m_objectList; };
+	virtual VcProgrammerSelectedObjects getObjects() const { return m_objectList; };
 	bool charIsStartcharForSelection(char charToCheck) const;
 	std::shared_ptr<Command::CommandBase> getResultingCommand() const;
 private:
 	std::string m_commandBuffer;
-	std::list<int> m_objectList;
+	VcProgrammerSelectedObjects m_objectList;
 	bool m_singleSelect=false;
 	std::shared_ptr<StateObjectSelectionSubstate> m_activeSubstate;
-	//std::list<int> m_objectListLhs;
+	//VcProgrammerSelectedObjects m_objectListLhs;
 };
 
 };

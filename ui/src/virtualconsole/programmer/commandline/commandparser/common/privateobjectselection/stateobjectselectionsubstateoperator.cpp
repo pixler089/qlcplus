@@ -32,41 +32,18 @@ void StateObjectSelectionSubstateOperator::finish(CommandText& formattedCommandT
 {
 	if (m_operator=='-')
 	{
-		m_objectList=m_objectListLhs;
-		for ( int object : m_objectListRhs)
-		{
-			m_objectList.remove(object);
-		}
+		m_objectList=m_objectListLhs-m_objectListRhs;
 	}
 	else if (m_operator=='+')
 	{
-		m_objectList=m_objectListLhs;
-		for ( int object : m_objectListRhs)
-		{
-			m_objectList.push_back(object);
-		}
+		m_objectList=m_objectListLhs+m_objectListRhs;
 	}
 	else if (m_operator=='*')
 	{
 		if (m_objectListLhs.size()==1 && m_objectListRhs.size()==1)
 		{
-			int objectLeft=m_objectListLhs.front();
-			int objectRight=m_objectListRhs.front();
-			m_objectList.clear();
-			if (objectLeft<=objectRight)
-			{
-				for (int object=objectLeft;object<=objectRight;object++)
-				{
-					m_objectList.push_back(object);
-				}
-			}
-			else
-			{
-				for (int object=objectLeft;object>=objectRight;object--)
-				{
-					m_objectList.push_back(object);
-				}
-			}
+			//TOOD unschoene Loesung hier aus der ObjectList wieder int zu machen.....
+			m_objectList=VcProgrammerSelectedObjects::createRange(m_objectListLhs.front().m_objectID, m_objectListRhs.front().m_objectID);
 		}
 		else
 		{
@@ -88,14 +65,10 @@ void StateObjectSelectionSubstateOperator::finish(CommandText& formattedCommandT
 	{
 		if (m_objectListRhs.size()==1)
 		{
-			int divisor=m_objectListRhs.front();
-			int counter=divisor-m_operatorRepeatCount+1;
-			m_objectList.clear();
-			for (int object : m_objectListLhs)
-			{
-				if (!((counter++)%divisor))
-					m_objectList.push_back(object);
-			}
+			//TOOD unschoene Loesung hier aus der ObjectList wieder int zu machen.....
+			int divisor=m_objectListRhs.front().m_objectID;
+			int counterStart=divisor-m_operatorRepeatCount+1;
+			m_objectList.setRotation(counterStart, divisor);
 		}
 		else
 		{
