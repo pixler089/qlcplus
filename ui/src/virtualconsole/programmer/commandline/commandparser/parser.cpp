@@ -108,6 +108,7 @@ bool Parser::parseCommand(std::string command, CommandText& formattedCommandText
 		auto cmd=parserStateInitial->getResultingCommand();
 		if (cmd.size())
 		{
+			std::move(cmd.begin(), cmd.end(), std::back_inserter(m_commands));
 			m_commands.splice(m_commands.end(), cmd);
 		}
 	}

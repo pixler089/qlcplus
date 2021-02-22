@@ -112,24 +112,8 @@ bool StateObjectSelection::charIsStartcharForSelection(char charToCheck) const
 
 Command::CommandBase::List StateObjectSelection::getResultingCommand() const
 {
-	/*
-	//First we handle commands that our State has to create (there don't exist substates)
-	if (m_commandType==CommandType::Select)
-	{
-		std::shared_ptr<Command::CommandWorkspaceSelect> commandReturn(new Command::CommandWorkspaceSelect());	
-		if (!m_stateSelection || m_stateSelection->getObjects().size()!=1)
-		{
-			return nullptr;
-		}
-		commandReturn->setWorkspaceToSelect(m_stateSelection->getObjects().front());
-
-		return commandReturn;
-	}
-	//No we handle commands that will be created by a substate
-	if (!m_followingParserState)
-		return nullptr;
-	return m_followingParserState->getResultingCommand();
-	*/
+	Command::CommandBase::List cmdList;
+	auto function=std::bind(m_rawCommand, std::placeholders::_1, m_objectList);
 	return Command::CommandBase::List();
 }
 

@@ -76,6 +76,8 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     /* Set the class name "VCProgrammer" as the object name as well */
     setObjectName(VCProgrammer::staticMetaObject.className());
 
+    ui.setupUi(this);
+
     setFrameStyle(KVCFrameStyleSunken);
     setType(VCWidget::XYPadWidget);
     setCaption("XY Pad");
@@ -84,16 +86,16 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     QSettings settings;
     QVariant var = settings.value(SETTINGS_XYPAD_SIZE);
     if (var.isValid() == true)
+	{
         resize(var.toSize());
+	}
     else
+	{
         resize(QSize(230, 230));
+	}
 
 	
-    m_mainVbox = new QVBoxLayout(this);
-	m_mainVbox->addStretch(0);
-
-	m_commandTextEdit = new CommandTextEdit(this);
-	m_mainVbox->addWidget(m_commandTextEdit);
+	ui.edtCommandInput->setCommandGuiInterface(this);
 
     slotModeChanged(m_doc->mode());
     setLiveEdit(m_liveEdit);
@@ -101,8 +103,7 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     m_doc->masterTimer()->registerDMXSource(this);
     connect(m_doc->inputOutputMap(), SIGNAL(universeWritten(quint32,QByteArray)),
             this, SLOT(slotUniverseWritten(quint32,QByteArray)));
-
-	m_commandTextEdit->setCommandGuiInterface(this);
+	connect(ui.edtCommandInput, SIGNAL(&CommandTextEdit::helpMessage), this, SLOT(&VCProgrammer::commandEditHelpChanged));
 }
 
 VCProgrammer::~VCProgrammer()

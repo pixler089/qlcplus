@@ -1,7 +1,9 @@
 #include "statefixturemain.h"
 
 #include "../common/stateobjectselection.h"
+#include "../../command/icommandgui.h"
 #include "statefixturesetvalues.h"
+#include <iterator>
 
 using namespace CommandParser;
 
@@ -80,7 +82,12 @@ void StateFixtureMain::returnAfterStacked(CommandText& commandText)
 
 Command::CommandBase::List StateFixtureMain::getResultingCommand() const
 {
+	m_stateSelection->setRawCommand(std::function<void(Command::ICommandGui* commandGui,  VcProgrammerSelectedObjects objects)>(&Command::ICommandGui::commandSetSelectedFixtures));
 	Command::CommandBase::List cmdList=m_stateSelection->getResultingCommand();
-	cmdList.splice(cmdList.end(), m_stateFollowing->getResultingCommand());
+	if (m_stateFollowing)
+	{
+		auto cmdFollowing=m_stateFollowing->getResultingCommand();
+		std::move(cmdFollowing.begin(), cmdFollowing.end(), std::back_inserter(cmdList));
+	}
 	return cmdList;
 }

@@ -4,6 +4,12 @@
 #include "../state.h"
 #include "../../..//vcprogrammerselectedobjects.h"
 
+namespace Command
+{
+
+class ICommandGui;
+}
+
 namespace CommandParser
 {
 
@@ -33,11 +39,13 @@ public:
 	virtual VcProgrammerSelectedObjects getObjects() const { return m_objectList; };
 	bool charIsStartcharForSelection(char charToCheck) const;
 	Command::CommandBase::List getResultingCommand() const;
+	void setRawCommand(std::function<void(Command::ICommandGui*, VcProgrammerSelectedObjects objects)> cmd) {m_rawCommand=cmd;} ;
 private:
 	std::string m_commandBuffer;
 	VcProgrammerSelectedObjects m_objectList;
 	bool m_singleSelect=false;
 	std::shared_ptr<StateObjectSelectionSubstate> m_activeSubstate;
+	std::function<void(Command::ICommandGui* commandGui,  VcProgrammerSelectedObjects objects)> m_rawCommand;
 	//VcProgrammerSelectedObjects m_objectListLhs;
 };
 

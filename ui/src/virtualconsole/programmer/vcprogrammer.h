@@ -33,6 +33,7 @@
 #include "dmxsource.h"
 #include "vcwidget.h"
 #include "commandline/command/icommandgui.h"
+#include "ui_vcprogrammer.h"
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
@@ -133,6 +134,8 @@ protected slots:
     /*************************************************************************
      * Load & Save
      *************************************************************************/
+private slots:
+	void commandEditHelpChanged(const std::string& helpMessage);
 public:
     /** @reimp */
     bool loadXML(QXmlStreamReader &root);
@@ -142,6 +145,7 @@ public:
 private:
 	QVBoxLayout* m_mainVbox=nullptr;
 	CommandTextEdit* m_commandTextEdit=nullptr;
+	Ui_VCProgrammerForm ui;
 };
 
 /** @} */

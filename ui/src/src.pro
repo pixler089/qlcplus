@@ -217,7 +217,8 @@ FORMS += aboutbox.ui \
          sceneeditor.ui \
          scripteditor.ui \
          selectinputchannel.ui \
-         showmanager/showeditor.ui
+         showmanager/showeditor.ui \
+         virtualconsole/programmer/vcprogrammer.ui
 
 # Virtual Console Forms
 FORMS += virtualconsole/addvcbuttonmatrix.ui \
