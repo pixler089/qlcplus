@@ -113,7 +113,10 @@ bool StateObjectSelection::charIsStartcharForSelection(char charToCheck) const
 Command::CommandBase::List StateObjectSelection::getResultingCommand() const
 {
 	Command::CommandBase::List cmdList;
-	auto function=std::bind(m_rawCommand, std::placeholders::_1, m_objectList);
-	return Command::CommandBase::List();
+	auto func=std::bind(m_rawCommand, std::placeholders::_1, m_objectList);
+	auto commandObject=std::make_shared<Command::CommandBase>(Command::CommandBase::EExecuteType::GUI, Object::Type::Fixture);
+	commandObject->setCommand(func);
+	cmdList.push_back(commandObject);
+	return cmdList;
 }
 

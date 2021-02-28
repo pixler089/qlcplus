@@ -2,6 +2,7 @@
 #define COMMANDPARSER_STATEFIXTURESETVALUES_H
 
 #include "../state.h"
+#include "qlcchannel.h"
 
 namespace CommandParser
 {
@@ -43,7 +44,9 @@ private:
 		Amber=4,
 		UV=5
 	};
-	std::string getColorString(ColorState colorstate) const; 
+	static std::string getColorString(ColorState colorstate); 
+	static QLCChannel::Preset getChannelType(ColorState internalColorState);
+	void addCommand(QLCChannel::Preset type, uint8_t dmxValue);
 	enum class InternalState
 	{
 		Start,
@@ -54,6 +57,8 @@ private:
 	InternalState m_internalState=InternalState::Start;
 	std::string m_brightnessString;
 	ColorState m_colorPartState=ColorState::Red;
+	Command::CommandBase::List m_commands;
+	bool m_errorState=false;
 
 };
 

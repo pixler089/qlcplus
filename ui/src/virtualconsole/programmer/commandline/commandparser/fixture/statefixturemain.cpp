@@ -27,6 +27,7 @@ void StateFixtureMain::clear()
 	m_state=InternalState::Start;
 	m_stateSelection->clear();
 	m_stateFollowing.reset();
+	m_stateSetValues.reset();
 }
 
 void StateFixtureMain::finish(CommandText& formattedCommandText)
@@ -45,7 +46,6 @@ bool StateFixtureMain::parseChar(char newChar, CommandText& formattedCommandText
 	if (m_stateSelection->charIsStartcharForSelection(newChar))
 	{
 		m_stateFollowing=m_stateSelection;
-		m_subcommand=SubCommand::SetValues;
 		m_state=InternalState::Selection;
 		return false;
 	}
@@ -74,9 +74,11 @@ void StateFixtureMain::returnAfterStacked(CommandText& commandText)
 		m_stateFollowing.reset();
 		return;
 	}
-	if (m_subcommand==SubCommand::SetValues)
+	if (m_state==InternalState::Selection)
 	{
-		m_stateFollowing.reset(new StateFixtureSetValues());
+		m_stateSetValues.reset(new StateFixtureSetValues());
+		m_stateFollowing=m_stateSetValues;
+		m_state=InternalState::SetValues;
 	}
 }
 
@@ -84,10 +86,10 @@ Command::CommandBase::List StateFixtureMain::getResultingCommand() const
 {
 	m_stateSelection->setRawCommand(std::function<void(Command::ICommandGui* commandGui,  VcProgrammerSelectedObjects objects)>(&Command::ICommandGui::commandSetSelectedFixtures));
 	Command::CommandBase::List cmdList=m_stateSelection->getResultingCommand();
-	if (m_stateFollowing)
+	if (m_stateSetValues)
 	{
-		auto cmdFollowing=m_stateFollowing->getResultingCommand();
-		std::move(cmdFollowing.begin(), cmdFollowing.end(), std::back_inserter(cmdList));
+		auto cmdSetValues=m_stateSetValues->getResultingCommand();
+		std::move(cmdSetValues.begin(), cmdSetValues.end(), std::back_inserter(cmdList));
 	}
 	return cmdList;
 }

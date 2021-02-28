@@ -35,6 +35,8 @@
 #include "commandline/command/icommandgui.h"
 #include "ui_vcprogrammer.h"
 
+#include <map>
+
 class QXmlStreamReader;
 class QXmlStreamWriter;
 class ctkRangeSlider;
@@ -136,6 +138,11 @@ protected slots:
      *************************************************************************/
 private slots:
 	void commandEditHelpChanged(const std::string& helpMessage);
+public slots:
+	void on_btnOverview_clicked();
+	void on_btnBrightness_clicked();
+	void on_btnColour_clicked();
+	void on_btnEffect_clicked();
 public:
     /** @reimp */
     bool loadXML(QXmlStreamReader &root);
@@ -146,6 +153,20 @@ private:
 	QVBoxLayout* m_mainVbox=nullptr;
 	CommandTextEdit* m_commandTextEdit=nullptr;
 	Ui_VCProgrammerForm ui;
+	void refreshOverview();
+	/** Engine */
+	virtual void commandSetSelectedFixtures(VcProgrammerSelectedObjects&& objects) override;
+	virtual void commandSetChannel(QLCChannel::Preset channelType, uint8_t dmxValue, uint8_t dmxValueFine=0) override;
+	virtual void commandClearAll() override;
+	virtual void commandClearSelected() override;
+	virtual void commandRotateSelection() override;
+	void setFixtureToValue(int fixtureUserID, QLCChannel::Preset channelType, uint8_t dmxValue);
+	VcProgrammerSelectedObjects m_selectedObjects;
+	struct FixtureData
+	{
+		std::map<QLCChannel::Preset, uint8_t> m_channelValues;
+	};
+	std::map<int, FixtureData> m_fixtureState;
 };
 
 /** @} */

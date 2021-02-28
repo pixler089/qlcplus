@@ -34,6 +34,7 @@ private:
 	Object::Type m_objectType = Object::Type::Unknown;
 	std::shared_ptr<State> m_commandParserCommandGroup;
 	std::shared_ptr<State> m_followingParserState;
+	std::shared_ptr<Command::CommandBase> m_ownCommand;
 };
 
 };

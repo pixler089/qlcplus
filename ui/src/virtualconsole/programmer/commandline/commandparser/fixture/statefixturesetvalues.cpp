@@ -2,6 +2,8 @@
 
 #include "../commandtext.h"
 
+#include "../../command/icommandgui.h"
+
 using namespace CommandParser;
 
 StateFixtureSetValues::StateFixtureSetValues()
@@ -12,7 +14,7 @@ StateFixtureSetValues::~StateFixtureSetValues()
 {
 }
 
-std::string StateFixtureSetValues::getColorString(StateFixtureSetValues::ColorState colorState) const
+std::string StateFixtureSetValues::getColorString(StateFixtureSetValues::ColorState colorState)
 {
 	switch (colorState)
 	{
@@ -33,16 +35,53 @@ std::string StateFixtureSetValues::getColorString(StateFixtureSetValues::ColorSt
 	}
 }
 
+QLCChannel::Preset StateFixtureSetValues::getChannelType(ColorState internalColorState)
+{
+	switch (internalColorState)
+	{
+		case ColorState::Red:
+			return QLCChannel::IntensityRed;
+		case ColorState::Green:
+			return QLCChannel::IntensityGreen;
+		case ColorState::Blue:
+			return QLCChannel::IntensityBlue;
+		case ColorState::White:
+			return QLCChannel::IntensityWhite;
+		case ColorState::Amber:
+			return QLCChannel::IntensityAmber;
+		case ColorState::UV:
+			return QLCChannel::IntensityUV;
+		default:
+			return QLCChannel::NoFunction;
+	}
+}
+
 void StateFixtureSetValues::clear()
 {
 	m_internalState=InternalState::Start;
 	m_brightnessString.clear();
 	m_colorPartState=ColorState::Red;
+	m_commands.clear();
+	m_errorState=false;
 }
 
 void StateFixtureSetValues::finish(CommandText& formattedCommandText)
 {
+	if (!m_errorState && m_brightnessString.size()>0)
+		addCommand(QLCChannel::Preset::IntensityDimmer, stoi(m_brightnessString)*255/100);
 	std::ignore=formattedCommandText;
+}
+
+void StateFixtureSetValues::addCommand(QLCChannel::Preset type, uint8_t dmxValue)
+{
+	auto func=std::function<void(Command::ICommandGui*,
+	                        QLCChannel::Preset channelType, 
+							uint8_t dmxValue, 
+							uint8_t dmxValueFine)>
+							(&Command::ICommandGui::commandSetChannel);
+	auto commandObject=std::make_shared<Command::CommandBase>(Command::CommandBase::EExecuteType::GUI, Object::Type::Fixture);
+	commandObject->setCommand(std::bind(func, std::placeholders::_1, type, dmxValue, 0));
+	m_commands.push_back(commandObject);
 }
 
 bool StateFixtureSetValues::parseChar(char newChar, CommandText& formattedCommandText)
@@ -51,23 +90,24 @@ bool StateFixtureSetValues::parseChar(char newChar, CommandText& formattedComman
 	{
 		if (m_internalState==InternalState::Start)
 		{
-			m_internalState=InternalState::Brightness;
 			formattedCommandText.appendRawCommandPart(newChar);
 			formattedCommandText.appendHtmlCommandPart(std::string("<font color=\"green\">")+newChar+"</font>");
+			m_internalState=InternalState::Brightness;
 			return true;
 		}
 		if (m_internalState==InternalState::Brightness)
 		{
-			m_internalState=InternalState::Color;
 			formattedCommandText.appendRawCommandPart(newChar);
 			formattedCommandText.appendHtmlCommandPart(std::string("<font color=\"green\">")+newChar+"</font>");
+			//Command will be created in finish()
+			m_internalState=InternalState::Color;
 			return true;
 		}
 		if (m_internalState==InternalState::Color)
 		{
-			m_internalState=InternalState::Flags;
 			formattedCommandText.appendRawCommandPart(newChar);
 			formattedCommandText.appendHtmlCommandPart(std::string("<font color=\"green\">")+newChar+"</font>");
+			m_internalState=InternalState::Flags;
 			return true;
 		}
 	}
@@ -79,7 +119,10 @@ bool StateFixtureSetValues::parseChar(char newChar, CommandText& formattedComman
 			if (m_brightnessString.empty())
 				prefix="Brightness=";
 			else if (stoi(m_brightnessString+newChar)>100)
+			{
+				m_errorState=true;
 				return false;
+			}
 			m_brightnessString+=newChar;
 			formattedCommandText.appendRawCommandPart(newChar);
 			formattedCommandText.appendHtmlCommandPart(std::string("<font color=\"green\">")+prefix+newChar+"</font>");
@@ -90,8 +133,14 @@ bool StateFixtureSetValues::parseChar(char newChar, CommandText& formattedComman
 			std::string colorName=getColorString(m_colorPartState);
 			if (colorName.empty())
 				return false;
+			int intensityPercent=(newChar-'0')*11;
+			if (intensityPercent==99)
+				intensityPercent=100;
 			formattedCommandText.appendRawCommandPart(newChar);
-			formattedCommandText.appendHtmlCommandPart(std::string("<font color=\"green\">")+colorName+"="+newChar+"</font> ");
+			formattedCommandText.appendHtmlCommandPart(std::string("<font color=\"green\">")+colorName+"="+std::to_string(intensityPercent)+"%</font> ");
+			auto qlcChannelType=getChannelType(m_colorPartState);
+			if (!m_errorState)
+				addCommand(qlcChannelType, intensityPercent*255/100);
 			m_colorPartState=static_cast<ColorState>(static_cast<int>(m_colorPartState)+1); // TODO dirty hack...
 			return true;
 		}
@@ -156,6 +205,6 @@ void StateFixtureSetValues::getHelpHintMessages(std::string& helpMessage, std::s
 
 Command::CommandBase::List StateFixtureSetValues::getResultingCommand() const
 {
-	return Command::CommandBase::List();
+	return m_commands;
 }
 

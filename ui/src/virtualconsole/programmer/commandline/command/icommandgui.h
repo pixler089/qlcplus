@@ -2,6 +2,7 @@
 #define GUI_ICOMMANDGUI_H
 
 #include "virtualconsole/programmer/vcprogrammerselectedobjects.h"
+#include "qlcchannel.h"
 
 #include <memory>
 
@@ -19,9 +20,20 @@ public:
 	{
 		std::ignore=objects;
 	}
-	virtual void commandSetBrightness(uint8_t brightnessDmxValue)
+	virtual void commandSetChannel(QLCChannel::Preset channelType, uint8_t dmxValue, uint8_t dmxValueFine=0)
 	{
-		std::ignore=brightnessDmxValue;
+		std::ignore=channelType;
+		std::ignore=dmxValue;
+		std::ignore=dmxValueFine;
+	}
+	virtual void commandClearAll()
+	{
+	}
+	virtual void commandClearSelected()
+	{
+	}
+	virtual void commandRotateSelection()
+	{
 	}
 };
 

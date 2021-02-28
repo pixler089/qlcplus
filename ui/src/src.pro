@@ -178,6 +178,7 @@ HEADERS += virtualconsole/addvcbuttonmatrix.h \
            virtualconsole/programmer/commandline/commandparser/fixture/statefixturesetvalues.h \
            virtualconsole/programmer/commandline/commandparser/parser.h \
            virtualconsole/programmer/commandline/commandparser/state.h \
+           virtualconsole/programmer/commandline/commandparser/clear/stateclearmain.h \
            virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacemain.h \
            virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacenew.h \
            virtualconsole/programmer/commandline/commandtextedit.h \
@@ -378,6 +379,7 @@ SOURCES += virtualconsole/addvcbuttonmatrix.cpp \
            virtualconsole/programmer/commandline/commandparser/fixture/statefixturesetvalues.cpp \
            virtualconsole/programmer/commandline/commandparser/parser.cpp \
            virtualconsole/programmer/commandline/commandparser/state.cpp \
+           virtualconsole/programmer/commandline/commandparser/clear/stateclearmain.cpp \
            virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacemain.cpp \
            virtualconsole/programmer/commandline/commandparser/workspace/stateworkspacenew.cpp \
            virtualconsole/programmer/commandline/commandtextedit.cpp \

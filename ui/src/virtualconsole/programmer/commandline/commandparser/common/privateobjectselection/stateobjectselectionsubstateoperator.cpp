@@ -67,7 +67,8 @@ void StateObjectSelectionSubstateOperator::finish(CommandText& formattedCommandT
 		{
 			//TOOD unschoene Loesung hier aus der ObjectList wieder int zu machen.....
 			int divisor=m_objectListRhs.front().m_objectID;
-			int counterStart=divisor-m_operatorRepeatCount+1;
+			int counterStart=m_operatorRepeatCount-1;
+			m_objectList=m_objectListLhs;
 			m_objectList.setRotation(counterStart, divisor);
 		}
 		else

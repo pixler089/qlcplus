@@ -80,7 +80,7 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
 
     setFrameStyle(KVCFrameStyleSunken);
     setType(VCWidget::XYPadWidget);
-    setCaption("XY Pad");
+    setCaption("Programmer");
     setMinimumSize(20, 20);
 
     QSettings settings;
@@ -94,7 +94,9 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
         resize(QSize(230, 230));
 	}
 
-	
+	ui.btnOverview->setChecked(true);
+	on_btnOverview_clicked();
+
 	ui.edtCommandInput->setCommandGuiInterface(this);
 
     slotModeChanged(m_doc->mode());
@@ -103,7 +105,7 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     m_doc->masterTimer()->registerDMXSource(this);
     connect(m_doc->inputOutputMap(), SIGNAL(universeWritten(quint32,QByteArray)),
             this, SLOT(slotUniverseWritten(quint32,QByteArray)));
-	connect(ui.edtCommandInput, SIGNAL(&CommandTextEdit::helpMessage), this, SLOT(&VCProgrammer::commandEditHelpChanged));
+	connect(ui.edtCommandInput, &CommandTextEdit::helpMessage, this, &VCProgrammer::commandEditHelpChanged);
 }
 
 VCProgrammer::~VCProgrammer()
@@ -176,6 +178,33 @@ void VCProgrammer::writeDMX(MasterTimer* timer, QList<Universe *> universes)
 {
 	Q_UNUSED(timer);
 	Q_UNUSED(universes);
+	for (const auto& fixtureState : m_fixtureState)
+	{
+		Fixture* fixture=m_doc->fixtureByUserID(fixtureState.first);
+		if (fixture==nullptr)
+			continue;
+
+		/*FadeChannel fc(doc(), fixture->id(), sv.channel);
+		quint32 universe = fc.universe();
+		if (universe == Universe::invalid())
+			continue;
+
+                QSharedPointer<GenericFader> fader = m_fadersMap.value(universe, QSharedPointer<GenericFader>());
+                if (fader.isNull())
+                {
+                    fader = ua[universe]->requestFader();
+                    fader->adjustIntensity(getAttributeValue(Intensity));
+                    fader->setBlendMode(blendMode());
+                    fader->setName(name());
+                    fader->setParentFunctionID(id());
+                    m_fadersMap[universe] = fader;
+                }
+
+                fc.setTarget(sv.value);
+                fc.addFlag(FadeChannel::Flashing);
+                fader->add(fc);
+				*/
+	}
 }
 
 void VCProgrammer::slotUniverseWritten(quint32 idx, const QByteArray &universeData)
@@ -291,4 +320,239 @@ bool VCProgrammer::saveXML(QXmlStreamWriter *doc)
     doc->writeEndElement();
 
     return true;
+}
+
+void VCProgrammer::commandEditHelpChanged(const std::string& helpMessage)
+{
+	ui.edtCommandHelp->setText(QString::fromStdString(helpMessage));
+}
+void VCProgrammer::on_btnOverview_clicked()
+{
+	ui.stackedWidget->setCurrentWidget(ui.pageOverview);
+}
+void VCProgrammer::on_btnBrightness_clicked()
+{
+	ui.stackedWidget->setCurrentWidget(ui.pageBrightness);
+}
+void VCProgrammer::on_btnColour_clicked()
+{
+	ui.stackedWidget->setCurrentWidget(ui.pageColour);
+}
+void VCProgrammer::on_btnEffect_clicked()
+{
+	ui.stackedWidget->setCurrentWidget(ui.pageEffect);
+}
+void VCProgrammer::commandSetSelectedFixtures(VcProgrammerSelectedObjects&& objects)
+{
+	m_selectedObjects=std::move(objects);
+	refreshOverview();
+}
+void VCProgrammer::setFixtureToValue(int fixtureUserID, QLCChannel::Preset channelType, uint8_t dmxValue)
+{
+	m_fixtureState[fixtureUserID].m_channelValues[channelType]=dmxValue;
+
+}
+void VCProgrammer::commandSetChannel(QLCChannel::Preset channelType, uint8_t dmxValue, uint8_t dmxValueFine)
+{
+	std::ignore=dmxValueFine;
+	auto objects=m_selectedObjects.getCurrentObjects();
+	objects.sort();
+	objects.unique();
+	for(int obj : objects)
+	{
+		setFixtureToValue(obj, channelType, dmxValue);
+	}
+
+	setChanged(true);
+	refreshOverview();
+}
+void VCProgrammer::commandClearAll()
+{
+	m_fixtureState.clear();
+	refreshOverview();
+}
+void VCProgrammer::commandClearSelected()
+{
+	auto objects=m_selectedObjects.getCurrentObjects();
+	objects.sort();
+	objects.unique();
+	for(int obj : objects)
+	{
+		m_fixtureState.erase(obj);
+	}
+	refreshOverview();
+}
+void VCProgrammer::commandRotateSelection()
+{
+	m_selectedObjects.stepRight();
+	refreshOverview();
+}
+QString getChannelTypeShortName(QLCChannel::Preset channelType)
+{
+	switch (channelType)
+	{
+		case QLCChannel::IntensityDimmer:
+			return QString("I");
+		case QLCChannel::IntensityRed:
+			return QString("R");
+		case QLCChannel::IntensityGreen:
+			return QString("G");
+		case QLCChannel::IntensityBlue:
+			return QString("B");
+		case QLCChannel::IntensityWhite:
+			return QString("W");
+		case QLCChannel::IntensityAmber:
+			return QString("A");
+		case QLCChannel::IntensityUV:
+			return QString("UV");
+		default:
+			return QString("?");
+        /*Custom = 0,
+        IntensityMasterDimmer,
+        IntensityMasterDimmerFine,
+        IntensityDimmerFine,
+        IntensityRedFine,
+        IntensityGreenFine,
+        IntensityBlueFine,
+        IntensityCyan,
+        IntensityCyanFine,
+        IntensityMagenta,
+        IntensityMagentaFine,
+        IntensityYellow,
+        IntensityYellowFine,
+        IntensityAmberFine,
+        IntensityWhiteFine,
+        IntensityUVFine,
+        IntensityIndigo,
+        IntensityIndigoFine,
+        IntensityLime,
+        IntensityLimeFine,
+        IntensityHue,
+        IntensityHueFine,
+        IntensitySaturation,
+        IntensitySaturationFine,
+        IntensityLightness,
+        IntensityLightnessFine,
+        IntensityValue,
+        IntensityValueFine,
+        PositionPan,
+        PositionPanFine,
+        PositionTilt,
+        PositionTiltFine,
+        PositionXAxis,
+        PositionYAxis,
+        SpeedPanSlowFast,
+        SpeedPanFastSlow,
+        SpeedTiltSlowFast,
+        SpeedTiltFastSlow,
+        SpeedPanTiltSlowFast,
+        SpeedPanTiltFastSlow,
+        ColorMacro,
+        ColorWheel,
+        ColorWheelFine,
+        ColorRGBMixer,
+        ColorCTOMixer,
+        ColorCTCMixer,
+        ColorCTBMixer,
+        GoboWheel,
+        GoboWheelFine,
+        GoboIndex,
+        GoboIndexFine,
+        ShutterStrobeSlowFast,
+        ShutterStrobeFastSlow,
+        ShutterIrisMinToMax,
+        ShutterIrisMaxToMin,
+        ShutterIrisFine,
+        BeamFocusNearFar,
+        BeamFocusFarNear,
+        BeamFocusFine,
+        BeamZoomSmallBig,
+        BeamZoomBigSmall,
+        BeamZoomFine,
+        PrismRotationSlowFast,
+        PrismRotationFastSlow,
+        NoFunction,
+        LastPreset // dummy for cycles*/
+
+	}
+}
+void VCProgrammer::refreshOverview()
+{
+	QString infoString;
+	auto objects=m_selectedObjects.getCurrentObjects();
+	objects.sort();
+	objects.unique();
+	auto selectIt=objects.begin();
+	auto stateIt=m_fixtureState.begin();
+	while (selectIt!=objects.end() || stateIt!=m_fixtureState.end())
+	{
+		bool activeSelect=false;
+		bool activeState=false;
+		int fixtureUserId=0;
+
+		if (selectIt==objects.end())
+		{
+			activeState=true;
+			fixtureUserId=stateIt->first;
+		}
+		else if (stateIt==m_fixtureState.end())
+		{
+			activeSelect=true;
+			fixtureUserId=*selectIt;
+		}
+		else if (*selectIt<stateIt->first)
+		{
+			activeSelect=true;
+			fixtureUserId=*selectIt;
+		}
+		else if (*selectIt>stateIt->first)
+		{
+			activeState=true;
+			fixtureUserId=stateIt->first;
+		}
+		else if (*selectIt==stateIt->first)
+		{
+			activeSelect=true;
+			activeState=true;
+			fixtureUserId=*selectIt;
+		}
+		else
+		{
+			//Error - should not occure because all other cases are not possible
+			continue;
+		}
+		if (m_doc->fixtureByUserID(fixtureUserId))
+		{
+
+			if (activeSelect)
+				infoString.append(QString("<b>"));
+			infoString.append(QString("%1").arg(fixtureUserId));
+			if (activeState)
+			{
+				infoString.append(QString(": "));
+				bool firstEntry=true;
+				for(const auto& channelValue : stateIt->second.m_channelValues)
+				{
+					if (!firstEntry)
+					{
+						infoString.append(QString(", "));
+					}
+					else
+					{
+						firstEntry=false;
+					}
+					infoString.append(QString("%1:%2").arg(getChannelTypeShortName(channelValue.first)).arg(channelValue.second*100/255));
+				}
+			}
+			if (activeSelect)
+				infoString.append(QString("</b>"));
+			infoString.append(QString("<br>"));
+		}
+
+		if (activeSelect)
+			++selectIt;
+		if (activeState)
+			++stateIt;
+	}
+	ui.edtOverview->setText(infoString);
 }

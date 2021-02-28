@@ -43,7 +43,7 @@ protected:
 private:
 	std::function<void(ICommandGui* commandGui)> m_genericCommand;
 	Object::Type m_objectType;
-	EExecuteType m_executeType;
+	EExecuteType m_executeType=EExecuteType::GUI;
 	int m_workspaceID=-1;
 	ICommandGui* m_commandGuiInterface=0;
 };

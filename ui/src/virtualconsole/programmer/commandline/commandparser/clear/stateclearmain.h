@@ -1,23 +1,21 @@
-#ifndef COMMANDPARSER_STATEFIXTUREMAIN_H
-#define COMMANDPARSER_STATEFIXTUREMAIN_H
+#ifndef COMMANDPARSER_STATECLEARMAIN_H
+#define COMMANDPARSER_STATECLEARMAIN_H
 
 #include <string>
 #include <list>
 #include <memory>
 
 #include "../state.h"
+#include "../common/stateobjectselection.h"
 
 namespace CommandParser
 {
 
-class StateObjectSelection;
-class StateFixtureSetValues;
-
-class StateFixtureMain : public State
+class StateClearMain : public State
 {
 public:
-	StateFixtureMain();
-	virtual ~StateFixtureMain();
+	StateClearMain();
+	virtual ~StateClearMain();
 	///@brief resets the parser
 	virtual void clear() override;
 	///@brief will be called by the parser if the parser decides not to give more chars to the state (perhaps because there is no more input)
@@ -27,26 +25,19 @@ public:
 	///@param newChar the char to parse
 	///@param formattedCommandText Output of the command text in pretty formatted expanded variant. This will be showed to the user.
 	virtual bool parseChar(char newChar, CommandText& formattedCommandText) override;
-	///if true, the command parser will push this state to a stack if getFollowingParserState has been != nullptr. If any of the followed commands don't like the parsed char and has no followingState, the
-	///parser will go back to the newest stacked state.
-	virtual bool wantsBeStacked() const override { return true; };
-	///will be called if the substate returns so the stacked state will be reactivated.
-	virtual void returnAfterStacked(CommandText& commandText) override;
 	///@brief returns the ParserState that should be used to parse the next char. 0, if no ParserState available for this char.
 	virtual std::shared_ptr<State> getFollowingParserState() override;
-	virtual void getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const override;
+	virtual bool wantsBeStacked() const override { return true; };
+	///Returns the command parsed. Returns 0 in case of an error.
 	virtual Command::CommandBase::List getResultingCommand() const override;
+	virtual void getHelpHintMessages(std::string& helpMessage, std::string& hintMessage) const override;
 private:
-	enum class InternalState
+	enum class CommandType
 	{
-		Start,
-		Selection,
-		SetValues
-	};
-	InternalState m_state=InternalState::Start;
-	std::shared_ptr<StateObjectSelection> m_stateSelection;
-	std::shared_ptr<StateFixtureSetValues> m_stateSetValues;
-	std::shared_ptr<State> m_stateFollowing;
+		NoCommand,
+		All,
+		Selected
+	} m_commandType=CommandType::NoCommand;
 };
 
 };

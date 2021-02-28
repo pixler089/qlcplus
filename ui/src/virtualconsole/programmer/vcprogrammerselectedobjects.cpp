@@ -1,5 +1,7 @@
 #include "vcprogrammerselectedobjects.h"
 
+#include <iostream>
+
 
 VcProgrammerSelectedObjects::VcProgrammerSelectedObjects()
 {
@@ -55,7 +57,7 @@ void VcProgrammerSelectedObjects::stepRight()
 		{
 			continue;
 		}
-		obj.m_rotationPosition=(obj.m_rotationSize+1)%obj.m_rotationSize;
+		obj.m_rotationPosition=(obj.m_rotationPosition-1)%obj.m_rotationSize;
 	}
 }
 
@@ -67,12 +69,14 @@ void VcProgrammerSelectedObjects::stepLeft()
 		{
 			continue;
 		}
-		obj.m_rotationPosition=(obj.m_rotationSize-1)%obj.m_rotationSize;
+		obj.m_rotationPosition=(obj.m_rotationSize+1)%obj.m_rotationSize;
 	}
 }
 
 void VcProgrammerSelectedObjects::setRotation(int rotationStart, int rotationSize)
 {
+	if (rotationSize==0)
+		return;
 	int increment=1;
 	if (rotationSize<0)
 	{
@@ -84,7 +88,7 @@ void VcProgrammerSelectedObjects::setRotation(int rotationStart, int rotationSiz
 	{
 		obj.m_rotationPosition=currentRotationPosition;
 		obj.m_rotationSize=rotationSize;
-		currentRotationPosition=(currentRotationPosition+increment)%rotationStart;
+		currentRotationPosition=(currentRotationPosition+increment)%rotationSize;
 	}
 }
 
