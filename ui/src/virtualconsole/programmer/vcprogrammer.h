@@ -51,6 +51,7 @@ class QByteArray;
 class QSlider;
 class EFX;
 class Doc;
+class GenericDMXSource;
 
 class CommandTextEdit;
 
@@ -60,7 +61,7 @@ class CommandTextEdit;
 
 #define KXMLQLCVCPROGRAMMER "Programmer"
 
-class VCProgrammer : public VCWidget, public DMXSource, public Command::ICommandGui
+class VCProgrammer : public VCWidget, public Command::ICommandGui
 {
     Q_OBJECT
     Q_DISABLE_COPY(VCProgrammer)
@@ -102,18 +103,8 @@ public:
     /*************************************************************************
      * Current position
      *************************************************************************/
-public:
-    /** @reimp */
-    void writeDMX(MasterTimer* timer, QList<Universe*> universes);
-
 public slots:
     void slotUniverseWritten(quint32 idx, const QByteArray& universeData);
-
-private:
-    bool m_inputValueChanged;
-
-    /** Map used to lookup a GenericFader instance for a Universe ID */
-    QMap<quint32, QSharedPointer<GenericFader> > m_fadersMap;
 
     /*********************************************************************
      * External input
@@ -167,6 +158,7 @@ private:
 		std::map<QLCChannel::Preset, uint8_t> m_channelValues;
 	};
 	std::map<int, FixtureData> m_fixtureState;
+	std::unique_ptr<GenericDMXSource> m_dmxSource;
 };
 
 /** @} */

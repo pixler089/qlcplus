@@ -33,6 +33,7 @@
 #include <QPixmap>
 #include <QCursor>
 #include <QSlider>
+#include <memory>
 #include <qmath.h>
 #include <QDebug>
 #include <QPoint>
@@ -56,6 +57,7 @@
 #include "scene.h"
 #include "efx.h"
 #include "doc.h"
+#include "genericdmxsource.h"
 #include "commandline/commandtextedit.h"
 
 const qreal MAX_VALUE = 256.0;
@@ -75,6 +77,9 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
 {
     /* Set the class name "VCProgrammer" as the object name as well */
     setObjectName(VCProgrammer::staticMetaObject.className());
+
+	m_dmxSource=std::make_unique<GenericDMXSource>(m_doc);
+	m_dmxSource->setOutputEnabled(true);
 
     ui.setupUi(this);
 
@@ -102,7 +107,6 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     slotModeChanged(m_doc->mode());
     setLiveEdit(m_liveEdit);
 
-    m_doc->masterTimer()->registerDMXSource(this);
     connect(m_doc->inputOutputMap(), SIGNAL(universeWritten(quint32,QByteArray)),
             this, SLOT(slotUniverseWritten(quint32,QByteArray)));
 	connect(ui.edtCommandInput, &CommandTextEdit::helpMessage, this, &VCProgrammer::commandEditHelpChanged);
@@ -110,13 +114,6 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
 
 VCProgrammer::~VCProgrammer()
 {
-    m_doc->masterTimer()->unregisterDMXSource(this);
-    foreach (QSharedPointer<GenericFader> fader, m_fadersMap.values())
-    {
-        if (!fader.isNull())
-            fader->requestDelete();
-    }
-    m_fadersMap.clear();
 }
 
 void VCProgrammer::enableWidgetUI(bool enable)
@@ -168,43 +165,6 @@ void VCProgrammer::setCaption(const QString& text)
 
 void VCProgrammer::editProperties()
 {
-}
-
-/*****************************************************************************
- * Current XY position
- *****************************************************************************/
-
-void VCProgrammer::writeDMX(MasterTimer* timer, QList<Universe *> universes)
-{
-	Q_UNUSED(timer);
-	Q_UNUSED(universes);
-	for (const auto& fixtureState : m_fixtureState)
-	{
-		Fixture* fixture=m_doc->fixtureByUserID(fixtureState.first);
-		if (fixture==nullptr)
-			continue;
-
-		/*FadeChannel fc(doc(), fixture->id(), sv.channel);
-		quint32 universe = fc.universe();
-		if (universe == Universe::invalid())
-			continue;
-
-                QSharedPointer<GenericFader> fader = m_fadersMap.value(universe, QSharedPointer<GenericFader>());
-                if (fader.isNull())
-                {
-                    fader = ua[universe]->requestFader();
-                    fader->adjustIntensity(getAttributeValue(Intensity));
-                    fader->setBlendMode(blendMode());
-                    fader->setName(name());
-                    fader->setParentFunctionID(id());
-                    m_fadersMap[universe] = fader;
-                }
-
-                fc.setTarget(sv.value);
-                fc.addFlag(FadeChannel::Flashing);
-                fader->add(fc);
-				*/
-	}
 }
 
 void VCProgrammer::slotUniverseWritten(quint32 idx, const QByteArray &universeData)
@@ -350,7 +310,70 @@ void VCProgrammer::commandSetSelectedFixtures(VcProgrammerSelectedObjects&& obje
 void VCProgrammer::setFixtureToValue(int fixtureUserID, QLCChannel::Preset channelType, uint8_t dmxValue)
 {
 	m_fixtureState[fixtureUserID].m_channelValues[channelType]=dmxValue;
-
+	Fixture* f=m_doc->fixtureByUserID(fixtureUserID);
+	if (!f)
+		return;
+	switch (channelType)
+	{
+		case QLCChannel::IntensityDimmer:
+		{
+			quint32 channel=f->channel(QLCChannel::Intensity);
+			if (channel==QLCChannel::invalid())
+				break;
+			m_dmxSource->set(f->id(), channel, dmxValue);			
+			break;
+		}
+		case QLCChannel::IntensityRed:
+		{
+			quint32 channel=f->channel(QLCChannel::Intensity, QLCChannel::Red);
+			if (channel==QLCChannel::invalid())
+				break;
+			m_dmxSource->set(f->id(), channel, dmxValue);			
+			break;
+		}
+		case QLCChannel::IntensityGreen:
+		{
+			quint32 channel=f->channel(QLCChannel::Intensity, QLCChannel::Green);
+			if (channel==QLCChannel::invalid())
+				break;
+			m_dmxSource->set(f->id(), channel, dmxValue);			
+			break;
+		}
+		case QLCChannel::IntensityBlue:
+		{
+			quint32 channel=f->channel(QLCChannel::Intensity, QLCChannel::Blue);
+			if (channel==QLCChannel::invalid())
+				break;
+			m_dmxSource->set(f->id(), channel, dmxValue);			
+			break;
+		}
+		case QLCChannel::IntensityWhite:
+		{
+			quint32 channel=f->channel(QLCChannel::Intensity, QLCChannel::White);
+			if (channel==QLCChannel::invalid())
+				break;
+			m_dmxSource->set(f->id(), channel, dmxValue);			
+			break;
+		}
+		case QLCChannel::IntensityAmber:
+		{
+			quint32 channel=f->channel(QLCChannel::Intensity, QLCChannel::Amber);
+			if (channel==QLCChannel::invalid())
+				break;
+			m_dmxSource->set(f->id(), channel, dmxValue);			
+			break;
+		}
+		case QLCChannel::IntensityUV:
+		{
+			quint32 channel=f->channel(QLCChannel::Intensity, QLCChannel::UV);
+			if (channel==QLCChannel::invalid())
+				break;
+			m_dmxSource->set(f->id(), channel, dmxValue);			
+			break;
+		}
+		default:
+			break;
+	}
 }
 void VCProgrammer::commandSetChannel(QLCChannel::Preset channelType, uint8_t dmxValue, uint8_t dmxValueFine)
 {
@@ -363,12 +386,12 @@ void VCProgrammer::commandSetChannel(QLCChannel::Preset channelType, uint8_t dmx
 		setFixtureToValue(obj, channelType, dmxValue);
 	}
 
-	setChanged(true);
 	refreshOverview();
 }
 void VCProgrammer::commandClearAll()
 {
 	m_fixtureState.clear();
+	m_dmxSource->unsetAll();
 	refreshOverview();
 }
 void VCProgrammer::commandClearSelected()
