@@ -83,6 +83,8 @@ VCProgrammer::VCProgrammer(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
 
     ui.setupUi(this);
 
+	ui.wdgColourPicker->setType(ClickAndGoWidget::RGB);
+
     setFrameStyle(KVCFrameStyleSunken);
     setType(VCWidget::XYPadWidget);
     setCaption("Programmer");

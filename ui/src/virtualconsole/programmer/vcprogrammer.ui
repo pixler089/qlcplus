@@ -139,6 +139,9 @@ ness</string>
      </item>
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
        <widget class="QWidget" name="pageOverview">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <property name="leftMargin">
@@ -177,7 +180,18 @@ ness</string>
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="pageBrightness"/>
+       <widget class="QWidget" name="pageBrightness">
+        <widget class="ClickAndGoWidget" name="wdgColourPicker" native="true">
+         <property name="geometry">
+          <rect>
+           <x>210</x>
+           <y>30</y>
+           <width>371</width>
+           <height>241</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
        <widget class="QWidget" name="pageColour"/>
        <widget class="QWidget" name="pageEffect"/>
       </widget>
@@ -217,6 +231,12 @@ p, li { white-space: pre-wrap; }
    <class>CommandTextEdit</class>
    <extends>QTextEdit</extends>
    <header>virtualconsole/programmer/commandline/commandtextedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ClickAndGoWidget</class>
+   <extends>QWidget</extends>
+   <header>clickandgowidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
